@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Boss Hiring 求职者入口，支持通过 Telegram 上传简历、填写语言能力、工作经验、期望岗位和期望薪资。" />
+    <title>上传简历 | Boss Hiring</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="./index.html"><span class="brand-mark">BH</span><span class="brand-text"><strong>Boss Hiring</strong><small>Phnom Penh Recruitment</small></span></a>
+      <button class="menu-button" type="button" data-menu-button aria-label="打开菜单"><span></span><span></span><span></span></button>
+      <nav class="nav-links" data-nav><a href="./companies.html">企业招聘</a><a href="./jobs.html">岗位机会</a><a href="./candidate.html">上传简历</a><a href="./employers.html">企业展示</a><a href="./boss-show.html">Boss来了</a><a href="./admin.html">后台入口</a></nav>
+      <a class="nav-action" data-telegram="candidate" href="https://t.me/" target="_blank" rel="noreferrer">上传简历</a>
+    </header>
+    <main>
+      <section class="page-hero candidate-hero">
+        <p class="eyebrow">Candidate Entry</p>
+        <h1>上传简历，进入 Boss Hiring 人才库</h1>
+        <p>支持 PDF、Word 和图片格式。提交后由顾问审核，并在有合适岗位时联系您。</p>
+        <a class="button primary" data-telegram="candidate" href="https://t.me/" target="_blank" rel="noreferrer">通过 Telegram 上传简历</a>
+      </section>
+      <section class="section detail-grid">
+        <article><span class="icon-box">01</span><h3>填写基础信息</h3><p>姓名、年龄、国籍、联系方式、当前城市和可入职时间。</p></article>
+        <article><span class="icon-box green">02</span><h3>补充求职偏好</h3><p>语言能力、工作经验、期望岗位、期望薪资和可接受地点。</p></article>
+        <article><span class="icon-box blue">03</span><h3>顾问人工匹配</h3><p>第一阶段由顾问审核和匹配，第二阶段可接入 AI 标签和岗位建议。</p></article>
+      </section>
+      <section class="section ai-preview">
+        <div><p class="eyebrow">Phase 2 AI</p><h2>AI 简历解析升级方向</h2><p>后续可自动提取行业、岗位、技能、工作年限和语言能力，并生成候选人标签。</p></div>
+        <div class="tag-grid"><span>#中文客服</span><span>#Web3运营</span><span>#销售</span><span>#中文流利</span><span>#金边</span><span>#可立即入职</span></div>
+      </section>
+    </main>
+    <footer class="site-footer"><p>© <span data-year></span> Boss Hiring. All rights reserved.</p><a href="./index.html">返回首页</a></footer>
+    <script src="./app.js"></script>
+  </body>
+</html>

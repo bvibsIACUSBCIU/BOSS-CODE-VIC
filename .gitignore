@@ -1,0 +1,8 @@
+.env
+x-ops/.env
+telegram-codex-bot/.env
+telegram-codex-bot/bot.log
+node_modules/
+.vercel
+.DS_Store
+**/.DS_Store

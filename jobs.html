@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Boss Hiring 柬埔寨岗位机会，支持客服、销售、运营、行政等岗位展示和 Telegram 申请入口。" />
+    <title>岗位机会 | Boss Hiring</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="./index.html"><span class="brand-mark">BH</span><span class="brand-text"><strong>Boss Hiring</strong><small>Phnom Penh Recruitment</small></span></a>
+      <button class="menu-button" type="button" data-menu-button aria-label="打开菜单"><span></span><span></span><span></span></button>
+      <nav class="nav-links" data-nav><a href="./companies.html">企业招聘</a><a href="./jobs.html">岗位机会</a><a href="./candidate.html">上传简历</a><a href="./employers.html">企业展示</a><a href="./boss-show.html">Boss来了</a><a href="./admin.html">后台入口</a></nav>
+      <a class="nav-action" data-telegram="candidate" href="https://t.me/" target="_blank" rel="noreferrer">岗位咨询</a>
+    </header>
+    <main>
+      <section class="page-hero jobs-hero">
+        <p class="eyebrow">Cambodia Jobs</p>
+        <h1>柬埔寨岗位机会</h1>
+        <p>岗位信息用于展示招聘方向，具体企业信息和申请流程以 Boss Hiring 顾问沟通为准。</p>
+      </section>
+      <section class="section jobs-section">
+        <div class="search-panel">
+          <input type="search" placeholder="搜索岗位、语言或地点" data-job-search aria-label="岗位搜索" />
+          <select aria-label="行业筛选"><option>全部行业</option><option>客服中心</option><option>互联网</option><option>企业服务</option></select>
+          <select aria-label="薪资筛选"><option>全部薪资</option><option>$500-$800</option><option>$800-$1200</option><option>$1200+</option></select>
+          <select aria-label="语言筛选"><option>全部语言</option><option>中文</option><option>英文</option><option>高棉语</option></select>
+        </div>
+        <div class="filter-bar"><button class="filter-chip is-active" type="button" data-filter="all">全部</button><button class="filter-chip" type="button" data-filter="customer-service">客服</button><button class="filter-chip" type="button" data-filter="sales">销售</button><button class="filter-chip" type="button" data-filter="operations">运营</button><button class="filter-chip" type="button" data-filter="admin">行政</button></div>
+        <div class="job-grid">
+          <article class="job-card" data-job-category="customer-service" data-search-text="中文客服 金边 中文 英文"><div class="job-topline"><span>中文客服</span><small>金边 · 今天</small></div><h3>Chinese Customer Service</h3><p>企业：认证企业 · 薪资：$700 - $1,000 · 语言：中文 / 英文基础</p><ul><li>负责客户咨询和订单沟通</li><li>有客服经验优先</li></ul><a href="./job-detail.html">查看岗位详情</a></article>
+          <article class="job-card" data-job-category="sales" data-search-text="企业销售 金边 中文 高棉语"><div class="job-topline"><span>企业销售</span><small>金边 · 2天前</small></div><h3>Business Development</h3><p>企业：推荐企业 · 薪资：$800 - $1,500 · 语言：中文 / 高棉语</p><ul><li>开发本地企业客户</li><li>有市场经验优先</li></ul><a href="./job-detail.html">查看岗位详情</a></article>
+          <article class="job-card" data-job-category="operations" data-search-text="运营助理 金边 中文 英文"><div class="job-topline"><span>运营助理</span><small>金边 · 3天前</small></div><h3>Operations Assistant</h3><p>企业：Boss访谈企业 · 薪资：$600 - $900 · 语言：中文 / 英文</p><ul><li>资料整理和流程跟进</li><li>熟悉办公软件</li></ul><a href="./job-detail.html">查看岗位详情</a></article>
+          <article class="job-card" data-job-category="admin" data-search-text="行政人事 金边 中文 高棉语"><div class="job-topline"><span>行政人事</span><small>金边 · 5天前</small></div><h3>HR & Admin</h3><p>企业：认证企业 · 薪资：$650 - $1,100 · 语言：中文 / 高棉语</p><ul><li>员工资料和招聘协助</li><li>有行政经验优先</li></ul><a href="./job-detail.html">查看岗位详情</a></article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><p>© <span data-year></span> Boss Hiring. All rights reserved.</p><a href="./index.html">返回首页</a></footer>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "boss-hiring-telegram-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/local-polling.mjs",
+    "set:webhook": "node scripts/set-webhook.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

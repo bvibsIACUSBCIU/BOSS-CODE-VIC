@@ -1,0 +1,44 @@
+ID,分类,语言,用户问题,关键词,标准回答,推荐按钮,是否启用
+FAQ-ZH-001,公司介绍,中文,Boss Hiring 是什么,"Boss Hiring,你们是做什么,公司介绍","Boss Hiring 是 AI 驱动的人才招聘与企业服务平台，专注服务柬埔寨企业和求职者。我们通过 Telegram Bot 收集资料，由 AI 辅助整理，再由顾问人工审核、匹配和跟进。","访问官网 ↗",TRUE
+FAQ-ZH-002,公司介绍,中文,你们和普通招聘平台有什么不同,"招聘平台,不同,优势","Boss Hiring 不是开放式招聘平台，不让企业自由浏览完整人才库。我们的模式是 AI 辅助 + 顾问主导，重点保护信息、提升匹配质量，并由顾问推进沟通、面试和入职。","了解 Boss来了",TRUE
+FAQ-ZH-003,求职者服务,中文,我想找工作怎么提交资料,"找工作,求职,提交资料","您可以点击「我要找工作」，选择下载简历模板填写后上传，或直接上传已有简历。Boss Hiring 会用 AI 辅助整理资料，再由顾问人工审核。","我要找工作",TRUE
+FAQ-ZH-004,求职者服务,中文,求职者收费吗,"求职者,收费,免费","求职者登记资料和提交简历原则上免费。Boss Hiring 顾问会在有合适岗位时联系您。","我要找工作",TRUE
+FAQ-ZH-005,求职者服务,中文,没有简历怎么办,"没有简历,模板,CV","如果您没有简历，可以点击「下载资料模板」，填写 Boss Hiring 简历模板后上传。","下载资料模板",TRUE
+FAQ-ZH-006,求职者服务,中文,上传简历后多久联系,"多久联系,审核,跟进","提交资料后，Boss Hiring 顾问会按提交顺序审核。是否联系取决于资料完整度和当前岗位匹配情况，请保持 Telegram 或电话畅通。","联系客服",TRUE
+FAQ-ZH-007,求职者服务,中文,可以找中文客服岗位吗,"中文客服,岗位,客服","可以。您可以在简历或备注里写明期望岗位为中文客服，并补充语言能力、工作经验、期望薪资和可入职时间。","我要找工作",TRUE
+FAQ-ZH-008,求职者服务,中文,没有柬埔寨工作经验可以吗,"柬埔寨经验,没有经验","可以提交资料。是否匹配岗位取决于企业要求、语言能力、工作经验和可入职条件。Boss Hiring 顾问会根据实际岗位判断。","我要找工作",TRUE
+FAQ-ZH-009,求职者服务,中文,我的资料会不会泄露,"资料泄露,隐私,简历安全","不会公开给所有企业。Boss Hiring 不开放完整人才库，候选人联系方式、完整简历等敏感信息会由顾问审核后再推进沟通。","联系客服",TRUE
+FAQ-ZH-010,企业招聘,中文,企业怎么发布招聘需求,"企业招聘,发布岗位,招人","企业可以点击「企业我要招聘」，在线提交招聘需求，或下载招聘需求模板填写后上传，也可以直接上传已有 JD。","企业我要招聘",TRUE
+FAQ-ZH-011,企业招聘,中文,企业需要提供哪些信息,"企业信息,岗位信息,JD","建议提供公司名称、行业、联系人、岗位名称、招聘人数、工作地点、薪资范围、语言要求、经验要求、福利支持、到岗时间和岗位描述。","下载资料模板",TRUE
+FAQ-ZH-012,企业招聘,中文,可以直接上传 JD 吗,"JD,上传,招聘需求","可以。您可以直接上传 Word、PDF 或图片格式的 JD。AI 会辅助整理岗位摘要和标签，顾问会再确认细节。","企业我要招聘",TRUE
+FAQ-ZH-013,企业招聘,中文,多久可以推荐候选人,"多久推荐,推荐周期,候选人","推荐时间取决于岗位要求、薪资范围、语言要求和候选人储备。顾问确认岗位和合作规则后，会尽快筛选并推荐合适人选。","企业我要招聘",TRUE
+FAQ-ZH-014,企业招聘,中文,服务费怎么算,"服务费,收费,佣金,价格","企业服务费需要由 Boss Hiring 顾问根据岗位类型、招聘人数、薪资范围、保证期和合作规则确认。建议先提交招聘需求，顾问会在推荐候选人前说明清楚。","联系客服",TRUE
+FAQ-ZH-015,企业招聘,中文,是否有保证期,"保证期,补人,离职","保证期和补人规则需要根据企业合作规则确认。顾问会在正式推荐候选人前与企业确认。","联系客服",TRUE
+FAQ-ZH-016,企业招聘,中文,企业能不能看完整人才库,"人才库,简历库,企业查看","第一阶段企业不能自由查看完整人才库。Boss Hiring 会提供候选人摘要、标签、期望薪资和匹配说明，完整联系方式和简历由顾问根据合作流程推进。","企业我要招聘",TRUE
+FAQ-ZH-017,Boss来了,中文,Boss来了是什么,"Boss来了,节目,访谈","《Boss来了》是 Boss Hiring 的企业访谈与品牌曝光栏目，通过老板访谈、企业环境、团队文化和岗位介绍，帮助企业建立雇主信任。","了解 Boss来了",TRUE
+FAQ-ZH-018,Boss来了,中文,企业怎么申请采访,"申请采访,上节目,品牌曝光","企业可以点击「了解 Boss来了」或「联系客服」，提交企业名称、行业、联系人、采访主题和合作意向，负责人会联系确认。","了解 Boss来了",TRUE
+FAQ-ZH-019,Boss来了,中文,往期视频在哪里看,"往期视频,视频,官网","您可以通过官网查看 Boss Hiring 和《Boss来了》的相关内容。","访问官网 ↗",TRUE
+FAQ-ZH-020,AI功能,中文,AI 会不会自动决定录用,"AI,录用,自动决定","不会。AI 只做辅助整理、摘要、标签和初步匹配建议，最终是否推荐、面试和录用都由顾问和企业人工确认。","联系客服",TRUE
+FAQ-ZH-021,AI功能,中文,AI 会做什么,"AI功能,摘要,标签,匹配","AI 可以辅助生成简历摘要、人才标签、岗位摘要、岗位标签、信息缺失提醒和初步匹配建议。","我要找工作",TRUE
+FAQ-ZH-022,数据后台,中文,我的资料存在哪里,"资料存储,后台,数据","第一阶段建议结构化数据进入 Google Sheets 或 Airtable，简历、JD、证书等文件进入 Google Drive 归档。内部团队根据状态跟进。","联系客服",TRUE
+FAQ-ZH-023,数据后台,中文,可以修改资料吗,"修改资料,补充资料","可以。您可以重新上传更新后的简历或补充说明，顾问会根据最新资料更新记录。","我要找工作",TRUE
+FAQ-ZH-024,联系咨询,中文,怎么联系人工顾问,"人工,客服,顾问,联系","您可以点击「联系客服」，或直接在 Bot 里说明您的需求。涉及费用、合作规则、紧急招聘等问题，会由顾问进一步确认。","联系客服",TRUE
+FAQ-ZH-025,官网,中文,官网在哪里,"官网,网站,链接","Boss Hiring 官网是 https://boss-hiring.vercel.app/#company，您也可以点击菜单里的「访问官网」。","访问官网 ↗",TRUE
+FAQ-ZH-026,信息保护,中文,求职者能看全部企业岗位吗,"求职者,企业岗位,岗位库","第一阶段不开放全部岗位库。Boss Hiring 会根据候选人资料和企业需求，由顾问筛选后进行匹配和沟通。","我要找工作",TRUE
+FAQ-ZH-027,企业招聘,中文,你们可以招哪些岗位,"岗位类型,客服,销售,运营","Boss Hiring 可协助企业招聘客服、销售、运营、行政、人事、财务、市场、助理等岗位。具体以企业需求和候选人储备为准。","企业我要招聘",TRUE
+FAQ-ZH-028,求职者服务,中文,需要住宿支持怎么办,"住宿,宿舍,福利","您可以在简历或备注里说明是否需要住宿支持。顾问匹配岗位时会参考企业是否提供住宿。","我要找工作",TRUE
+FAQ-ZH-029,求职者服务,中文,需要签证或工作证怎么办,"签证,工作证,visa","您可以在资料里说明是否需要签证或工作证支持。是否提供支持由具体企业岗位决定。","我要找工作",TRUE
+FAQ-ZH-030,企业招聘,中文,候选人联系方式什么时候给,"联系方式,电话,Telegram,WhatsApp","候选人的联系方式不会直接公开。企业确认合作规则后，顾问会按流程推进候选人沟通和面试安排。","企业我要招聘",TRUE
+FAQ-ZH-031,公司介绍,中文,服务地区在哪里,"服务地区,金边,柬埔寨","Boss Hiring 重点服务柬埔寨金边及周边招聘需求，后续可根据企业合作拓展更多地区。","访问官网 ↗",TRUE
+FAQ-ZH-032,客服兜底,中文,我不知道该选哪个,"不知道,怎么选,帮助","没关系。如果您是求职者，请选「我要找工作」；如果您代表企业招聘，请选「企业我要招聘」；如果想做企业采访或品牌曝光，请选「了解 Boss来了」。","联系客服",TRUE
+FAQ-EN-001,Company,English,What is Boss Hiring,"what is boss hiring,company","Boss Hiring is an AI-driven talent recruitment and enterprise service platform for Cambodia. We collect hiring needs and candidate profiles through Telegram Bot, use AI to organize information, and let consultants review and follow up manually.","Visit Website ↗",TRUE
+FAQ-EN-002,Candidate,English,How do I submit my resume,"job,resume,candidate","Choose “I’m Looking for a Job”, download the resume template or upload your existing resume directly. AI will help organize your profile and consultants will review it.","I’m Looking for a Job",TRUE
+FAQ-EN-003,Employer,English,How can my company hire,"hire,employer,jd","Choose “I Want to Hire”, submit hiring needs, download the hiring request template, or upload an existing JD. A consultant will confirm details before matching candidates.","I Want to Hire",TRUE
+FAQ-EN-004,Pricing,English,How much is the service fee,"fee,price,cost","Employer service fees need to be confirmed by a Boss Hiring consultant based on role type, headcount, salary range, guarantee period, and cooperation rules.","Contact Support",TRUE
+FAQ-EN-005,Privacy,English,Will my resume be public,"privacy,resume,public","No. Boss Hiring does not open the full talent database. Candidate contact details and full resumes are protected and handled by consultants.","Contact Support",TRUE
+FAQ-EN-006,AI,English,Does AI make hiring decisions,"AI,decision,hiring","No. AI only assists with summaries, tags, missing information checks, and matching suggestions. Final decisions are made by consultants and employers.","Contact Support",TRUE
+FAQ-EN-007,Boss Show,English,What is Boss Show,"Boss Show,interview,brand","Boss Show is Boss Hiring’s company interview and employer branding program, helping companies build trust through founder stories, office environment, team culture, and role introductions.","About Boss Show",TRUE
+FAQ-KM-001,Company,Khmer,តើ Boss Hiring ជាអ្វី,"boss hiring,ក្រុមហ៊ុន","Boss Hiring គឺជាវេទិកាជ្រើសរើសបុគ្គលិក និងសេវាក្រុមហ៊ុនដែលជំរុញដោយ AI សម្រាប់ទីផ្សារកម្ពុជា។","ចូលទៅកាន់គេហទំព័រ",TRUE
+FAQ-KM-002,Candidate,Khmer,ខ្ញុំចង់រកការងារត្រូវធ្វើដូចម្តេច,"រកការងារ,CV","សូមជ្រើស “ខ្ញុំចង់រកការងារ” ហើយផ្ញើ CV ឬទាញយកគំរូ CV បំពេញរួចផ្ញើឡើងវិញ។","ខ្ញុំចង់រកការងារ",TRUE
+FAQ-KM-003,Employer,Khmer,ក្រុមហ៊ុនចង់ជ្រើសរើសត្រូវធ្វើដូចម្តេច,"ជ្រើសរើស,JD","សូមជ្រើស “ក្រុមហ៊ុនចង់ជ្រើសរើស” ហើយផ្ញើតម្រូវការងារ ឬ JD។ ទីប្រឹក្សានឹងទាក់ទងបញ្ជាក់លម្អិត។","ក្រុមហ៊ុនចង់ជ្រើសរើស",TRUE
+FAQ-KM-004,Privacy,Khmer,ព័ត៌មានរបស់ខ្ញុំមានសុវត្ថិភាពទេ,"សុវត្ថិភាព,privacy","Boss Hiring មិនបើកចំហ CV ពេញលេញ ឬព័ត៌មានទំនាក់ទំនងដោយផ្ទាល់។ ទីប្រឹក្សានឹងពិនិត្យមុននឹងបន្តដំណើរការ។","ទាក់ទងសេវាកម្ម",TRUE
