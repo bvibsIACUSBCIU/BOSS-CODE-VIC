@@ -1,6 +1,12 @@
-const WEBSITE_URL = process.env.BOSS_HIRING_WEBSITE || "https://boss-hiring.vercel.app/#company";
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const INTERNAL_CHAT_ID = process.env.INTERNAL_TELEGRAM_CHAT_ID || "";
+import { CONFIG } from '../src/config.js';
+import { isAdmin } from '../src/admin/adminGuard.js';
+import { handleAdminCommand, handleAdminCallback } from '../src/handlers/adminHandler.js';
+import { handleFileUpload } from '../src/handlers/uploadHandler.js';
+import { formHandler } from '../src/handlers/formHandler.js';
+
+const WEBSITE_URL = CONFIG.website;
+const TOKEN = CONFIG.telegram.token;
+const INTERNAL_CHAT_ID = CONFIG.telegram.internalChatId;
 
 const LANGS = {
   zh: "中文",
@@ -172,9 +178,23 @@ export default async function handler(request, response) {
     return;
   }
 
-  const update = request.body;
+  const body = request.body;
+
+  // Intercept Status Change Events from Google Sheets Apps Script
+  if (body && body.event === "status_change") {
+    try {
+      const { handleStatusChange } = await import('../src/handlers/statusHandler.js');
+      await handleStatusChange(body, sendMessage);
+      response.status(200).json({ ok: true, message: "Status change notification sent." });
+    } catch (error) {
+      console.error('Status change webhook error:', error.message);
+      response.status(400).json({ ok: false, error: error.message });
+    }
+    return;
+  }
+
   try {
-    await handleUpdate(update);
+    await handleUpdate(body);
     response.status(200).json({ ok: true });
   } catch (error) {
     console.error(error);
@@ -196,19 +216,40 @@ async function handleUpdate(update) {
   const chatId = String(message.chat.id);
   const text = message.text?.trim() || "";
 
+  // Intercept Admin Commands
+  if (isAdmin(chatId)) {
+    const isCmd = await handleAdminCommand(chatId, text, sendMessage);
+    if (isCmd) return;
+  }
+
   if (text === "/start" || text === "/help") {
+    formHandler.cancelForm(chatId);
     USER_CONTEXT.delete(chatId);
     await sendLanguageIntro(chatId);
     return;
   }
 
   if (text === "/menu" || text === "菜单" || text === "Menu") {
+    formHandler.cancelForm(chatId);
     await sendMainMenu(chatId, USER_LANG.get(chatId) || "zh");
     return;
   }
 
   if (text === "/language" || text === "语言" || text === "Language") {
+    formHandler.cancelForm(chatId);
     await sendLanguageIntro(chatId);
+    return;
+  }
+
+  if (formHandler.isFilling(chatId)) {
+    const lang = USER_LANG.get(chatId) || "zh";
+    if (text) {
+      await formHandler.handleFormInput(chatId, text, lang, sendMessage, async (notifyText) => {
+        if (CONFIG.telegram.internalChatId) {
+          await sendMessage(CONFIG.telegram.internalChatId, notifyText);
+        }
+      });
+    }
     return;
   }
 
@@ -250,12 +291,26 @@ async function handleUpdate(update) {
     return;
   }
 
+  if (text === "🔐 管理员菜单 / Admin") {
+    if (isAdmin(chatId)) {
+      const { sendAdminMenu } = await import('../src/handlers/adminHandler.js');
+      await sendAdminMenu(chatId, sendMessage);
+      return;
+    }
+  }
+
   if (await handleMenuText(chatId, text)) {
     return;
   }
 
   if (message.document || message.photo) {
-    await handleUpload(chatId, message);
+    const context = USER_CONTEXT.get(chatId) || "unknown";
+    const lang = USER_LANG.get(chatId) || "zh";
+    await handleFileUpload(chatId, message, context, lang, sendMessage, async (notifyText) => {
+      if (CONFIG.telegram.internalChatId) {
+        await sendMessage(CONFIG.telegram.internalChatId, notifyText);
+      }
+    });
     return;
   }
 
@@ -265,17 +320,31 @@ async function handleUpdate(update) {
 async function handleCallback(callback) {
   const chatId = String(callback.message.chat.id);
   const data = callback.data || "";
+  const lang = USER_LANG.get(chatId) || "zh";
 
   await telegram("answerCallbackQuery", { callback_query_id: callback.id });
 
-  if (data.startsWith("lang:")) {
-    const lang = data.split(":")[1];
-    USER_LANG.set(chatId, LANGS[lang] ? lang : "zh");
-    await sendMainMenu(chatId, USER_LANG.get(chatId));
+  if (data.startsWith("form:")) {
+    await formHandler.handleFormCallback(chatId, data, lang, sendMessage, async (notifyText) => {
+      if (CONFIG.telegram.internalChatId) {
+        await sendMessage(CONFIG.telegram.internalChatId, notifyText);
+      }
+    });
     return;
   }
 
-  const lang = USER_LANG.get(chatId) || "zh";
+  // Intercept Admin Callback Actions
+  if (isAdmin(chatId) && data.startsWith('admin:')) {
+    await handleAdminCallback(chatId, data, sendMessage);
+    return;
+  }
+
+  if (data.startsWith("lang:")) {
+    const selectedLang = data.split(":")[1];
+    USER_LANG.set(chatId, LANGS[selectedLang] ? selectedLang : "zh");
+    await sendMainMenu(chatId, USER_LANG.get(chatId));
+    return;
+  }
   const t = COPY[lang];
 
   if (data === "menu") {
@@ -323,13 +392,13 @@ async function handleCallback(callback) {
 
   if (data === "candidate_online") {
     USER_CONTEXT.set(chatId, "candidate");
-    await sendMessage(chatId, t.onlineCandidate, templatesKeyboard(lang));
+    await formHandler.startForm(chatId, "candidate", lang, sendMessage);
     return;
   }
 
   if (data === "employer_online") {
     USER_CONTEXT.set(chatId, "employer");
-    await sendMessage(chatId, t.onlineEmployer, templatesKeyboard(lang));
+    await formHandler.startForm(chatId, "employer", lang, sendMessage);
     return;
   }
 
@@ -360,39 +429,51 @@ async function sendLanguageIntro(chatId) {
 }
 
 async function sendMainMenu(chatId, lang) {
-  await sendMessage(chatId, `${COPY[lang].menuTitle}\n\n${COPY[lang].commands}`, serviceMenuKeyboard(lang));
+  await sendMessage(chatId, `${COPY[lang].menuTitle}\n\n${COPY[lang].commands}`, serviceMenuKeyboard(lang, chatId));
 }
 
-function mainKeyboard(lang) {
+function mainKeyboard(lang, chatId = null) {
   const m = COPY[lang].menu;
-  return {
-    inline_keyboard: [
-      [{ text: m.language, callback_data: "language" }],
-      [
-        { text: m.candidate, callback_data: "candidate" },
-        { text: m.employer, callback_data: "employer" },
-      ],
-      [
-        { text: m.show, callback_data: "show" },
-        { text: m.templates, callback_data: "templates" },
-      ],
-      [
-        { text: m.website, url: WEBSITE_URL },
-        { text: m.support, callback_data: "support" },
-      ],
+  const keyboard = [
+    [{ text: m.language, callback_data: "language" }],
+    [
+      { text: m.candidate, callback_data: "candidate" },
+      { text: m.employer, callback_data: "employer" },
     ],
+    [
+      { text: m.show, callback_data: "show" },
+      { text: m.templates, callback_data: "templates" },
+    ],
+    [
+      { text: m.website, url: WEBSITE_URL },
+      { text: m.support, callback_data: "support" },
+    ],
+  ];
+
+  if (chatId && isAdmin(chatId)) {
+    keyboard.push([{ text: "🔐 管理员菜单 / Admin Options", callback_data: "admin:menu" }]);
+  }
+
+  return {
+    inline_keyboard: keyboard,
   };
 }
 
-function serviceMenuKeyboard(lang) {
+function serviceMenuKeyboard(lang, chatId = null) {
   const m = COPY[lang].menu;
+  const keyboard = [
+    [{ text: m.language }],
+    [{ text: m.candidate }, { text: m.employer }],
+    [{ text: m.show }, { text: m.templates }],
+    [{ text: m.website }, { text: m.support }],
+  ];
+
+  if (chatId && isAdmin(chatId)) {
+    keyboard.push([{ text: "🔐 管理员菜单 / Admin" }]);
+  }
+
   return {
-    keyboard: [
-      [{ text: m.language }],
-      [{ text: m.candidate }, { text: m.employer }],
-      [{ text: m.show }, { text: m.templates }],
-      [{ text: m.website }, { text: m.support }],
-    ],
+    keyboard,
     resize_keyboard: true,
     one_time_keyboard: false,
     input_field_placeholder: COPY[lang].menuHint,
@@ -536,7 +617,7 @@ async function handleUpload(chatId, message) {
 
   await storeLead(record);
   await notifyInternal(record);
-  await sendMessage(chatId, COPY[lang].uploadReceived, mainKeyboard(lang));
+  await sendMessage(chatId, COPY[lang].uploadReceived, mainKeyboard(lang, chatId));
 }
 
 async function handleCustomerChat(chatId, message) {

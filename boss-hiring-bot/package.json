@@ -5,9 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/local-polling.mjs",
-    "set:webhook": "node scripts/set-webhook.mjs"
+    "set:webhook": "node scripts/set-webhook.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.0",
+    "vitest": "^2.0.0"
   }
 }
