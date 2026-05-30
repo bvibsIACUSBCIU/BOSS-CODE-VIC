@@ -1,12 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import handler from "../api/telegram.js";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 loadEnv(path.join(rootDir, ".env"));
 
 const token = requiredEnv("TELEGRAM_BOT_TOKEN");
+const { default: handler } = await import("../api/telegram.js");
 let offset = 0;
 
 console.log("Boss Hiring Bot local polling started.");
