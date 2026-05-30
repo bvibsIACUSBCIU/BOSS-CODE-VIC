@@ -98,20 +98,34 @@ describe('Online Form Filling Stateful Workflow', () => {
     await formHandler.handleFormInput('user123', '柬埔寨', 'zh', replyFunc, notifyInternalFunc);
     // 6. Answer Current City
     await formHandler.handleFormInput('user123', '金边', 'zh', replyFunc, notifyInternalFunc);
-    // 7. Answer Phone
+    // 7. Answer Telegram Contact
+    await formHandler.handleFormInput('user123', '@mark', 'zh', replyFunc, notifyInternalFunc);
+    // 8. Answer Phone
     await formHandler.handleFormInput('user123', '12345678', 'zh', replyFunc, notifyInternalFunc);
-    // 8. Answer Languages
+    // 9. Answer Languages
     await formHandler.handleFormInput('user123', '中文', 'zh', replyFunc, notifyInternalFunc);
-    // 9. Answer Education via callback
+    // 10. Answer Education via callback
     await formHandler.handleFormCallback('user123', 'form:opt:本科', 'zh', replyFunc, notifyInternalFunc);
-    // 10. Answer Experience Years
+    // 11. Answer Experience Years
     await formHandler.handleFormInput('user123', '1年', 'zh', replyFunc, notifyInternalFunc);
-    // 11. Answer Expected Role
+    // 12. Answer Past Experience
+    await formHandler.handleFormInput('user123', 'IT', 'zh', replyFunc, notifyInternalFunc);
+    // 13. Answer Expected Role
     await formHandler.handleFormInput('user123', '翻译', 'zh', replyFunc, notifyInternalFunc);
-    // 12. Answer Expected Salary
+    // 14. Answer Expected Salary
     await formHandler.handleFormInput('user123', '1000$', 'zh', replyFunc, notifyInternalFunc);
-    // 13. Answer Preferred Work Location (Final field)
+    // 15. Answer Preferred Work Location
     await formHandler.handleFormInput('user123', '金边', 'zh', replyFunc, notifyInternalFunc);
+    // 16. Answer Available Start Date
+    await formHandler.handleFormInput('user123', '随时', 'zh', replyFunc, notifyInternalFunc);
+    // 17. Answer Cambodia Work Experience via callback
+    await formHandler.handleFormCallback('user123', 'form:opt:是', 'zh', replyFunc, notifyInternalFunc);
+    // 18. Answer Accommodation Support via callback
+    await formHandler.handleFormCallback('user123', 'form:opt:是', 'zh', replyFunc, notifyInternalFunc);
+    // 19. Answer Visa Support via callback
+    await formHandler.handleFormCallback('user123', 'form:opt:是', 'zh', replyFunc, notifyInternalFunc);
+    // 20. Answer Other Notes (Final field)
+    await formHandler.handleFormInput('user123', '无', 'zh', replyFunc, notifyInternalFunc);
 
     // 14. Should present the summary page with confirm/restart buttons
     const summaryMsg = messages[messages.length - 1];

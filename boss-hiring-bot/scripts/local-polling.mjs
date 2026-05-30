@@ -7,6 +7,11 @@ loadEnv(path.join(rootDir, ".env"));
 
 const token = requiredEnv("TELEGRAM_BOT_TOKEN");
 const { default: handler } = await import("../api/telegram.js");
+const { syncAirtableSchema } = await import("../src/storage/schemaSync.js");
+
+// Run schema verification and update on startup
+await syncAirtableSchema();
+
 let offset = 0;
 
 console.log("Boss Hiring Bot local polling started.");

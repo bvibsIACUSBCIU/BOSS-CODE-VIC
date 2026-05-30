@@ -10,9 +10,9 @@ const USER_STATES = new Map();
 
 // Simplified options mapping for multiple choice buttons
 const BUTTON_LABELS = {
-  zh: { cancel: '❌ 取消填写', confirm: '✅ 确认提交', restart: '🔄 重新填写' },
-  en: { cancel: '❌ Cancel', confirm: '✅ Confirm Submit', restart: '🔄 Restart' },
-  km: { cancel: '❌ បោះបង់', confirm: '✅ យល់ព្រមបញ្ជូន', restart: '🔄 បំពេញឡើងវិញ' }
+  zh: { cancel: '取消填写', confirm: '确认提交', restart: '重新填写' },
+  en: { cancel: 'Cancel', confirm: 'Confirm Submit', restart: 'Restart' },
+  km: { cancel: 'បោះបង់', confirm: 'យល់ព្រមបញ្ជូន', restart: 'បំពេញឡើងវិញ' }
 };
 
 // Candidate Questionnaire Fields & Localized Prompts
@@ -20,107 +20,175 @@ const CANDIDATE_QUESTIONS = [
   {
     field: 'name',
     prompts: {
-      zh: '👤 请输入您的姓名：',
-      en: '👤 Please enter your name:',
-      km: '👤 សូមបញ្ចូលឈ្មោះរបស់អ្នក៖'
+      zh: '请输入您的姓名：',
+      en: 'Please enter your name:',
+      km: 'សូមបញ្ចូលឈ្មោះរបស់អ្នក៖'
     }
   },
   {
     field: 'gender',
     prompts: {
-      zh: '🗣 请选择您的性别：',
-      en: '🗣 Please select your gender:',
-      km: '🗣 សូមជ្រើសរើសភេទរបស់អ្នក៖'
+      zh: '请选择您的性别：',
+      en: 'Please select your gender:',
+      km: 'សូមជ្រើសរើសភេទរបស់អ្នក៖'
     },
     options: [
-      { text: { zh: '🚹 男', en: '🚹 Male', km: '🚹 ប្រុស' }, val: '男' },
-      { text: { zh: '🚺 女', en: '🚺 Female', km: '🚺 ស្រី' }, val: '女' }
+      { text: { zh: '男', en: 'Male', km: 'ប្រុស' }, val: '男' },
+      { text: { zh: '女', en: 'Female', km: 'ស្រី' }, val: '女' }
     ]
   },
   {
     field: 'age',
     prompts: {
-      zh: '🎂 请输入您的年龄（例如: 25）：',
-      en: '🎂 Please enter your age (e.g., 25):',
-      km: '🎂 សូមបញ្ចូលអាយុរបស់អ្នក (ឧទាហរណ៍៖ ២៥)៖'
+      zh: '请输入您的年龄（例如: 25）：',
+      en: 'Please enter your age (e.g., 25):',
+      km: 'សូមបញ្ចូលអាយុរបស់អ្នក (ឧទាហរណ៍៖ ២៥)៖'
     }
   },
   {
     field: 'nationality',
     prompts: {
-      zh: '🌍 请输入您的国籍（例如: 柬埔寨, 中国）：',
-      en: '🌍 Please enter your nationality (e.g., Cambodia, China):',
-      km: '🌍 សូមបញ្ចូលសញ្ជាតិរបស់អ្នក (ឧទាហរណ៍៖ កម្ពុជា, ចិន)៖'
+      zh: '请输入您的国籍（例如: 柬埔寨, 中国）：',
+      en: 'Please enter your nationality (e.g., Cambodia, China):',
+      km: 'សូមបញ្ចូលសញ្ជាតិរបស់អ្នក (ឧទាហរណ៍៖ កម្ពុជា, ចិន)៖'
     }
   },
   {
     field: 'currentCity',
     prompts: {
-      zh: '📍 请输入您当前所在的城市（例如: 金边）：',
-      en: '📍 Please enter your current city (e.g., Phnom Penh):',
-      km: '📍 សូមបញ្ចូលទីក្រុងបច្ចុប្បន្នរបស់អ្នក (ឧទាហរណ៍៖ ភ្នំពេញ)៖'
+      zh: '请输入您当前所在的城市（例如: 金边）：',
+      en: 'Please enter your current city (e.g., Phnom Penh):',
+      km: 'សូមបញ្ចូលទីក្រុងបច្ចុប្បន្នរបស់អ្នក (ឧទាហរណ៍៖ ភ្នំពេញ)៖'
+    }
+  },
+  {
+    field: 'telegramContact',
+    prompts: {
+      zh: '请输入您的 Telegram 联系方式（例如: @username）：',
+      en: 'Please enter your Telegram handle (e.g., @username):',
+      km: 'សូមបញ្ចូលគណនី Telegram របស់អ្នក (ឧទាហរណ៍៖ @username)៖'
     }
   },
   {
     field: 'phoneWhatsApp',
     prompts: {
-      zh: '📞 请输入您的联系电话 / WhatsApp：',
-      en: '📞 Please enter your Phone / WhatsApp number:',
-      km: '📞 សូមបញ្ចូលលេខទូរស័ព្ទ / WhatsApp របស់អ្នក៖'
+      zh: '请输入您的联系电话 / WhatsApp：',
+      en: 'Please enter your Phone / WhatsApp number:',
+      km: 'សូមបញ្ចូលលេខទូរស័ព្ទ / WhatsApp របស់អ្នក៖'
     }
   },
   {
     field: 'languages',
     prompts: {
-      zh: '🗣 您会哪些语言（例如: 中文, 英文, 柬文）：',
-      en: '🗣 Which languages do you speak? (e.g., Chinese, English, Khmer):',
-      km: '🗣 តើអ្នកអាចនិយាយភាសាអ្វីខ្លះ? (ឧទាហរណ៍៖ ចិន, អង់គ្លេស, ខ្មែរ)៖'
+      zh: '您会哪些语言（例如: 中文, 英文, 柬文）：',
+      en: 'Which languages do you speak? (e.g., Chinese, English, Khmer):',
+      km: 'តើអ្នកអាចនិយាយភាសាអ្វីខ្លះ? (ឧទាហរណ៍៖ ចិន, អង់គ្លេស, ខ្មែរ)៖'
     }
   },
   {
     field: 'education',
     prompts: {
-      zh: '🎓 请选择您的最高学历：',
-      en: '🎓 Please select your highest education level:',
-      km: '🎓 សូមជ្រើសរើសកម្រិតវប្បធម៌ខ្ពស់បំផុតរបស់អ្នក៖'
+      zh: '请选择您的最高学历：',
+      en: 'Please select your highest education level:',
+      km: 'សូមជ្រើសរើសកម្រិតវប្បធម៌ខ្ពស់បំផុតរបស់អ្នក៖'
     },
     options: [
-      { text: { zh: '🎓 高中及以下', en: '🎓 High School or below', km: '🎓 មធ្យមសិក្សាឬទាបជាង' }, val: '高中及以下' },
-      { text: { zh: '🎓 专科/大专', en: '🎓 Associate Degree', km: '🎓 បរិញ្ញាបត្ររង' }, val: '专科' },
-      { text: { zh: '🎓 本科', en: '🎓 Bachelor\'s Degree', km: '🎓 បរិញ្ញាបត្រ' }, val: '本科' },
-      { text: { zh: '🎓 硕士及以上', en: '🎓 Master\'s / PhD', km: '🎓 អនុបណ្ឌិតឬខ្ពស់ជាង' }, val: '硕士及以上' }
+      { text: { zh: '高中及以下', en: 'High School or below', km: 'មធ្យមសិក្សាឬទាបជាង' }, val: '高中及以下' },
+      { text: { zh: '专科/大专', en: 'Associate Degree', km: 'បរិញ្ញាបត្ររង' }, val: '专科' },
+      { text: { zh: '本科', en: 'Bachelor\'s Degree', km: 'បរិញ្ញាបត្រ' }, val: '本科' },
+      { text: { zh: '硕士及以上', en: 'Master\'s / PhD', km: 'អនុបណ្ឌិតឬខ្ពស់ជាង' }, val: '硕士及以上' }
     ]
   },
   {
     field: 'experienceYears',
     prompts: {
-      zh: '💼 请输入您的工作年限（例如: 1年, 3-5年, 无经验）：',
-      en: '💼 Please enter your years of experience (e.g., 1 year, 3-5 years, No experience):',
-      km: '💼 សូមបញ្ចូលឆ្នាំពិសោធន៍ការងាររបស់អ្នក (ឧទាហរណ៍៖ ១ឆ្នាំ, ៣-៥ឆ្នាំ, គ្មានពិសោធន៍)៖'
+      zh: '请输入您的工作年限（例如: 1年, 3-5年, 无经验）：',
+      en: 'Please enter your years of experience (e.g., 1 year, 3-5 years, No experience):',
+      km: 'សូមបញ្ចូលឆ្នាំពិសោធន៍ការងាររបស់អ្នក (ឧទាហរណ៍៖ ១ឆ្នាំ, ៣-៥ឆ្នាំ, គ្មានពិសោធន៍)៖'
+    }
+  },
+  {
+    field: 'pastExperience',
+    prompts: {
+      zh: '请输入您的过往行业经验：',
+      en: 'Please enter your past industry experience:',
+      km: 'សូមបញ្ចូលបទពិសោធន៍វិស័យការងារពីមុនរបស់អ្នក៖'
     }
   },
   {
     field: 'expectedRole',
     prompts: {
-      zh: '👔 请输入您期望的岗位（例如: 翻译, 行政, 销售）：',
-      en: '👔 Please enter your expected job role (e.g., Translator, Admin, Sales):',
-      km: '👔 សូមបញ្ចូលតួនាទីរំពឹងទុក (ឧទាហរណ៍៖ អ្នកបកប្រែ, រដ្ឋបាល, លក់)៖'
+      zh: '请输入您期望的岗位（例如: 翻译, 行政, 销售）：',
+      en: 'Please enter your expected job role (e.g., Translator, Admin, Sales):',
+      km: 'សូមបញ្ចូលតួនាទីរំពឹងទុក (ឧទាហរណ៍៖ អ្នកបកប្រែ, រដ្ឋបាល, លក់)៖'
     }
   },
   {
     field: 'expectedSalary',
     prompts: {
-      zh: '💰 请输入您的期望月薪（例如: 1000$）：',
-      en: '💰 Please enter your expected monthly salary (e.g., 1000$):',
-      km: '💰 សូមបញ្ចូលប្រាក់ខែរំពឹងទុក (ឧទាហរណ៍៖ ១០០០$)៖'
+      zh: '请输入您的期望月薪（例如: 1000$）：',
+      en: 'Please enter your expected monthly salary (e.g., 1000$):',
+      km: 'សូមបញ្ចូលប្រាក់ខែរំពឹងទុក (ឧទាហរណ៍៖ ១០០០$)៖'
     }
   },
   {
     field: 'acceptableLocation',
     prompts: {
-      zh: '📍 请输入可接受的工作地点（例如: 金边, 西港）：',
-      en: '📍 Please enter your preferred work location (e.g., Phnom Penh, Sihanoukville):',
-      km: '📍 សូមបញ្ចូលទីតាំងការងារដែលអាចទទួលយកបាន (ឧទាហរណ៍៖ ភ្នំពេញ, ព្រះសីហនុ)៖'
+      zh: '请输入可接受的工作地点（例如: 金边, 西港）：',
+      en: 'Please enter your preferred work location (e.g., Phnom Penh, Sihanoukville):',
+      km: 'សូមបញ្ចូលទីតាំងការងារដែលអាចទទួលយកបាន (ឧទាហរណ៍៖ ភ្នំពេញ, ព្រះសីហនុ)៖'
+    }
+  },
+  {
+    field: 'availableStartDate',
+    prompts: {
+      zh: '请输入您的最快可入职时间（例如: 随时, 1周内）：',
+      en: 'Please enter your earliest available start date (e.g., Immediately, within 1 week):',
+      km: 'សូមបញ្ចូលកាលបរិច្ឆេទអាចចូលធ្វើការបានឆាប់បំផុត (ឧទាករណ៍៖ ភ្លាមៗ, ក្នុងរយៈពេល ១សប្តាហ៍)៖'
+    }
+  },
+  {
+    field: 'cambodiaWorkExperience',
+    prompts: {
+      zh: '您是否有柬埔寨工作经验：',
+      en: 'Do you have work experience in Cambodia?',
+      km: 'តើអ្នកមានបទពិសោធន៍ការងារនៅប្រទេសកម្ពុជាទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'accommodationSupport',
+    prompts: {
+      zh: '您是否需要住宿支持：',
+      en: 'Do you require accommodation support?',
+      km: 'តើអ្នកត្រូវការជំនួយផ្នែកកន្លែងស្នាក់នៅទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'visaSupport',
+    prompts: {
+      zh: '您是否需要签证 / 工作证支持：',
+      en: 'Do you require visa / work permit support?',
+      km: 'តើអ្នកត្រូវការជំនួយផ្នែកទិដ្ឋាការ / លិខិតអនុញ្ញាតការងារទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'otherNotes',
+    prompts: {
+      zh: '请输入其他备注（如无，请输入“无”）：',
+      en: 'Please enter other notes (if none, enter "None"):',
+      km: 'សូមបញ្ចូលព័ត៌មានបន្ថែមផ្សេងៗ (បើគ្មានទេ សូមបញ្ចូល "គ្មាន")៖'
     }
   }
 ];
@@ -130,73 +198,173 @@ const EMPLOYER_QUESTIONS = [
   {
     field: 'companyName',
     prompts: {
-      zh: '🏢 请输入您的公司名称：',
-      en: '🏢 Please enter your company name:',
-      km: '🏢 សូមបញ្ចូលឈ្មោះក្រុមហ៊ុនរបស់អ្នក៖'
+      zh: '请输入您的公司名称：',
+      en: 'Please enter your company name:',
+      km: 'សូមបញ្ចូលឈ្មោះក្រុមហ៊ុនរបស់អ្នក៖'
     }
   },
   {
     field: 'industry',
     prompts: {
-      zh: '💼 请输入公司所属行业（例如: 科技 IT, 餐饮, 房地产）：',
-      en: '💼 Please enter the company industry (e.g., IT, Catering, Real Estate):',
-      km: '💼 សូមបញ្ចូលវិស័យការងាររបស់ក្រុមហ៊ុន (ឧទាហរណ៍៖ បច្ចេកវិទ្យា, ភោជនីយដ្ឋាន)៖'
+      zh: '请输入公司所属行业（例如: 科技 IT, 餐饮, 房地产）：',
+      en: 'Please enter the company industry (e.g., IT, Catering, Real Estate):',
+      km: 'សូមបញ្ចូលវិស័យការងាររបស់ក្រុមហ៊ុន (ឧទាហរណ៍៖ បច្ចេកវិទ្យា, ភោជនីយដ្ឋាន)៖'
+    }
+  },
+  {
+    field: 'companyAddress',
+    prompts: {
+      zh: '请输入公司地址：',
+      en: 'Please enter the company address:',
+      km: 'សូមបញ្ចូលអាសយដ្ឋានក្រុមហ៊ុន៖'
     }
   },
   {
     field: 'contactName',
     prompts: {
-      zh: '👤 请输入联系人姓名：',
-      en: '👤 Please enter contact person\'s name:',
-      km: '👤 សូមបញ្ចូលឈ្មោះអ្នកទំនាក់ទំនង៖'
+      zh: '请输入联系人姓名：',
+      en: 'Please enter contact person\'s name:',
+      km: 'សូមបញ្ចូលឈ្មោះអ្នកទំនាក់ទំនង៖'
+    }
+  },
+  {
+    field: 'contactPosition',
+    prompts: {
+      zh: '请输入您的联系人职位：',
+      en: 'Please enter your job title/position:',
+      km: 'សូមបញ្ចូលតំណែងអ្នកទំនាក់ទំនង៖'
+    }
+  },
+  {
+    field: 'contactTelegram',
+    prompts: {
+      zh: '请输入联系人的 Telegram 联系方式（例如: @username）：',
+      en: 'Please enter contact\'s Telegram handle (e.g., @username):',
+      km: 'សូមបញ្ចូលគណនី Telegram អ្នកទំនាក់ទំនង (ឧទាហរណ៍៖ @username)៖'
     }
   },
   {
     field: 'contactPhoneWhatsApp',
     prompts: {
-      zh: '📞 请输入联系人电话 / WhatsApp：',
-      en: '📞 Please enter contact Phone / WhatsApp:',
-      km: '📞 សូមបញ្ចូលលេខទូរស័ព្ទ / WhatsApp អ្នកទំនាក់ទំនង៖'
+      zh: '请输入联系人电话 / WhatsApp：',
+      en: 'Please enter contact Phone / WhatsApp:',
+      km: 'សូមបញ្ចូលលេខទូរស័ព្ទ / WhatsApp អ្នកទំនាក់ទំនង៖'
     }
   },
   {
     field: 'jobTitle',
     prompts: {
-      zh: '👔 请输入招聘岗位名称（例如: Node.js 程序员, 行政翻译）：',
-      en: '👔 Please enter the job title to recruit (e.g., Node.js Developer, Admin Translator):',
-      km: '👔 សូមបញ្ចូលឈ្មោះមុខតំណែងជ្រើសរើស (ឧទាហរណ៍៖ អ្នកសរសេរកម្មវិធី, អ្នកបកប្រែ)៖'
+      zh: '请输入招聘岗位名称（例如: Node.js 程序员, 行政翻译）：',
+      en: 'Please enter the job title to recruit (e.g., Node.js Developer, Admin Translator):',
+      km: 'សូមបញ្ចូលឈ្មោះមុខតំណែងជ្រើសរើស (ឧទាហរណ៍៖ អ្នកសរសេរកម្មវិធី, អ្នកបកប្រែ)៖'
     }
   },
   {
     field: 'headcount',
     prompts: {
-      zh: '👥 请输入招聘人数（例如: 3人, 若干）：',
-      en: '👥 Please enter the headcount needed (e.g., 3 people, several):',
-      km: '👥 សូមបញ្ចូលចំនួនបុគ្គលិកត្រូវការ (ឧទាហរណ៍៖ ៣នាក់, មិនកំណត់)៖'
+      zh: '请输入招聘人数（例如: 3人, 若干）：',
+      en: 'Please enter the headcount needed (e.g., 3 people, several):',
+      km: 'សូមបញ្ចូលចំនួនបុគ្គលិកត្រូវការ (ឧទាហរណ៍៖ ៣នាក់, មិនកំណត់)៖'
     }
   },
   {
     field: 'workLocation',
     prompts: {
-      zh: '📍 请输入工作地点（例如: 金边）：',
-      en: '📍 Please enter the work location (e.g., Phnom Penh):',
-      km: '📍 សូមបញ្ចូលទីតាំងការងារ (ឧទាហរណ៍៖ ភ្នំពេញ)៖'
+      zh: '请输入工作地点（例如: 金边）：',
+      en: 'Please enter the work location (e.g., Phnom Penh):',
+      km: 'សូមបញ្ចូលទីតាំងការងារ (ឧទាហរណ៍៖ ភ្នំពេញ)៖'
     }
   },
   {
     field: 'salaryRange',
     prompts: {
-      zh: '💰 请输入薪资范围（例如: 1000-1500 USD）：',
-      en: '💰 Please enter the salary range (e.g., 1000-1500 USD):',
-      km: '💰 សូមបញ្ចូលចន្លោះប្រាក់ខែ (ឧទាហរណ៍៖ ១០០០-១៥០០ ដុល្លារ)៖'
+      zh: '请输入薪资范围（例如: 1000-1500 USD）：',
+      en: 'Please enter the salary range (e.g., 1000-1500 USD):',
+      km: 'សូមបញ្ចូលចន្លោះប្រាក់ខែ (ឧទាហរណ៍៖ ១០០០-១៥០០ ដុល្លារ)៖'
+    }
+  },
+  {
+    field: 'workingHours',
+    prompts: {
+      zh: '请输入工作时间（例如: 8:00-17:00, 周休一天）：',
+      en: 'Please enter the working hours (e.g., 8:00-17:00, 1 day off per week):',
+      km: 'សូមបញ្ចូលម៉ោងធ្វើការ (ឧទាហរណ៍៖ ៨:០០-១៧:០០, សម្រាកមួយថ្ងៃក្នុងមួយសប្តាហ៍)៖'
+    }
+  },
+  {
+    field: 'languageRequirements',
+    prompts: {
+      zh: '请输入招聘岗位语言要求：',
+      en: 'Please enter the language requirements for this role:',
+      km: 'សូមបញ្ចូលតម្រូវការភាសាសម្រាប់តួនាទីនេះ៖'
+    }
+  },
+  {
+    field: 'experienceRequirements',
+    prompts: {
+      zh: '请输入招聘岗位工作经验要求：',
+      en: 'Please enter the work experience requirements:',
+      km: 'សូមបញ្ចូលតម្រូវការបទពិសោធន៍ការងារ៖'
+    }
+  },
+  {
+    field: 'accommodationProvided',
+    prompts: {
+      zh: '公司是否提供住宿：',
+      en: 'Does the company provide accommodation?',
+      km: 'តើក្រុមហ៊ុនមានផ្តល់កន្លែងស្នាក់នៅទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'visaProvided',
+    prompts: {
+      zh: '公司是否提供签证 / 工作证：',
+      en: 'Does the company provide visa / work permit?',
+      km: 'តើក្រុមហ៊ុនមានផ្តល់ទិដ្ឋាការ / លិខិតអនុញ្ញាតការងារទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'expectedArrivalDate',
+    prompts: {
+      zh: '请输入到岗时间要求（例如: 随时, 2周内）：',
+      en: 'Please enter the expected arrival timeline (e.g., Immediately, within 2 weeks):',
+      km: 'សូមបញ្ចូលតម្រូវការពេលវេលាមកដល់បំពេញការងារ (ឧទាហរណ៍៖ ភ្លាមៗ, ក្នុងរយៈពេល ២សប្តាហ៍)៖'
     }
   },
   {
     field: 'jobDescription',
     prompts: {
-      zh: '📝 请输入简短岗位职责与要求：',
-      en: '📝 Please enter a brief job description and requirements:',
-      km: '📝 សូមបញ្ចូលការពិពណ៌នាការងារ និងតម្រូវការ៖'
+      zh: '请输入岗位描述：',
+      en: 'Please enter the job description:',
+      km: 'សូមបញ្ចូលការពិពណ៌នាការងារ៖'
+    }
+  },
+  {
+    field: 'acceptServiceFeeRules',
+    prompts: {
+      zh: '您是否接受 Boss Hiring 服务费规则：',
+      en: 'Do you accept Boss Hiring\'s service fee rules?',
+      km: 'តើអ្នកយល់ព្រមតាមច្បាប់កម្រៃសេវារបស់ Boss Hiring ទេ?៖'
+    },
+    options: [
+      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
+      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+    ]
+  },
+  {
+    field: 'otherNotes',
+    prompts: {
+      zh: '请输入其他备注（如无，请输入“无”）：',
+      en: 'Please enter other notes (if none, enter "None"):',
+      km: 'សូមបញ្ចូលព័ត៌មានបន្ថែមផ្សេងៗ (បើគ្មានទេ សូមបញ្ចូល "គ្មាន")៖'
     }
   }
 ];
@@ -360,9 +528,9 @@ async function sendSummary(chatId, lang, replyFunc) {
   const questions = state.type === 'candidate' ? CANDIDATE_QUESTIONS : EMPLOYER_QUESTIONS;
   
   let summaryTitle = {
-    zh: '📊 *请核对您填写的信息：*\n\n',
-    en: '📊 *Please verify the details you entered:*\n\n',
-    km: '📊 *សូមពិនិត្យព័ត៌មានដែលបានបំពេញ៖*\n\n'
+    zh: '*请核对您填写的信息：*\n\n',
+    en: '*Please verify the details you entered:*\n\n',
+    km: '*សូមពិនិត្យព័ត៌មានដែលបានបំពេញ៖*\n\n'
   }[lang];
 
   let summaryText = summaryTitle;

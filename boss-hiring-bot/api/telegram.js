@@ -3,6 +3,7 @@ import { isAdmin } from '../src/admin/adminGuard.js';
 import { handleAdminCommand, handleAdminCallback } from '../src/handlers/adminHandler.js';
 import { handleFileUpload } from '../src/handlers/uploadHandler.js';
 import { formHandler } from '../src/handlers/formHandler.js';
+import { syncAirtableSchema } from '../src/storage/schemaSync.js';
 
 const WEBSITE_URL = CONFIG.website;
 const TOKEN = CONFIG.telegram.token;
@@ -168,6 +169,12 @@ const COPY = {
 };
 
 export default async function handler(request, response) {
+  try {
+    await syncAirtableSchema();
+  } catch (syncErr) {
+    console.error("Failed to sync Airtable schema on request:", syncErr.message);
+  }
+
   if (request.method !== "POST") {
     response.status(200).json({ ok: true, service: "Boss Hiring Telegram Bot" });
     return;
@@ -215,6 +222,15 @@ async function handleUpdate(update) {
 
   const chatId = String(message.chat.id);
   const text = message.text?.trim() || "";
+
+  if (text === "中文" || text === "English" || text === "ភាសាខ្មែរ") {
+    formHandler.cancelForm(chatId);
+    const langMap = { "中文": "zh", "English": "en", "ភាសាខ្មែរ": "km" };
+    const selectedLang = langMap[text];
+    USER_LANG.set(chatId, selectedLang);
+    await sendMainMenu(chatId, selectedLang);
+    return;
+  }
 
   // Intercept Admin Commands
   if (isAdmin(chatId)) {
@@ -402,6 +418,28 @@ async function handleCallback(callback) {
     return;
   }
 
+  if (data === "candidate_upload_hint") {
+    USER_CONTEXT.set(chatId, "candidate");
+    const hints = {
+      zh: "📎 请直接向本聊天框发送您的 **PDF / Word 简历文件或图片**，系统将自动进行 AI 深度解析、提取标签并上传归档。",
+      en: "📎 Please send your **PDF / Word resume file or image** directly to this chat. The system will automatically run AI parsing, tag extraction, and archiving.",
+      km: "📎 សូមផ្ញើឯកសារ **CV ជា PDF / Word ឬរូបភាព** មកកាន់ប្រអប់សារនេះ។ ប្រព័ន្ធនឹងវិភាគ AI និងបញ្ចូលឯកសារដោយស្វ័យប្រវត្ត។"
+    };
+    await sendMessage(chatId, hints[lang] || hints.zh, candidateKeyboard(lang));
+    return;
+  }
+
+  if (data === "employer_upload_hint") {
+    USER_CONTEXT.set(chatId, "employer");
+    const hints = {
+      zh: "📎 请直接向本聊天框发送您的 **JD / 招聘需求文件或图片**，系统将自动进行 AI 梳理岗位摘要、提取标签并上传归档。",
+      en: "📎 Please send your **JD / Hiring requirement file or image** directly to this chat. The system will automatically run AI summarization, tag extraction, and archiving.",
+      km: "📎 សូមផ្ញើឯកសារ **JD ឬតម្រូវការការងារ** មកកាន់ប្រអប់សារនេះ។ ប្រព័ន្ធនឹងវិភាគ AI និងបញ្ចូលឯកសារដោយស្វ័យប្រវត្ត។"
+    };
+    await sendMessage(chatId, hints[lang] || hints.zh, employerKeyboard(lang));
+    return;
+  }
+
   if (data === "candidate_template") {
     USER_CONTEXT.set(chatId, "candidate");
     await sendTemplate(chatId, lang, "candidate");
@@ -462,7 +500,7 @@ function mainKeyboard(lang, chatId = null) {
 function serviceMenuKeyboard(lang, chatId = null) {
   const m = COPY[lang].menu;
   const keyboard = [
-    [{ text: m.language }],
+    [{ text: "中文" }, { text: "English" }, { text: "ភាសាខ្មែរ" }],
     [{ text: m.candidate }, { text: m.employer }],
     [{ text: m.show }, { text: m.templates }],
     [{ text: m.website }, { text: m.support }],
@@ -481,20 +519,34 @@ function serviceMenuKeyboard(lang, chatId = null) {
 }
 
 function candidateKeyboard(lang) {
+  const labels = {
+    zh: { online: '在线填写资料', upload: '上传PDF简历AI解析', template: '下载简历模板' },
+    en: { online: 'Fill Profile Online', upload: 'Upload PDF Resume for AI Parsing', template: 'Download Resume Template' },
+    km: { online: 'បំពេញអនឡាញ', upload: 'ផ្ញើ CV វិភាគ AI', template: 'ទាញយកគំរូ CV' }
+  };
+  const tLabels = labels[lang] || labels.zh;
   return {
     inline_keyboard: [
-      [{ text: lang === "zh" ? "在线填写资料" : lang === "en" ? "Fill Online" : "បំពេញអនឡាញ", callback_data: "candidate_online" }],
-      [{ text: lang === "zh" ? "下载简历模板" : lang === "en" ? "Download Resume Template" : "ទាញយកគំរូ CV", callback_data: "candidate_template" }],
+      [{ text: tLabels.online, callback_data: "candidate_online" }],
+      [{ text: tLabels.upload, callback_data: "candidate_upload_hint" }],
+      [{ text: tLabels.template, callback_data: "candidate_template" }],
       [{ text: COPY[lang].menu.back, callback_data: "menu" }],
     ],
   };
 }
 
 function employerKeyboard(lang) {
+  const labels = {
+    zh: { online: '在线填写招聘需求', upload: '上传JD文件AI解析', template: '下载招聘需求模板' },
+    en: { online: 'Fill Hiring Request Online', upload: 'Upload JD File for AI Parsing', template: 'Download Hiring Template' },
+    km: { online: 'បំពេញតម្រូវការជ្រើសរើស', upload: 'ផ្ញើ JD វិភាគ AI', template: 'ទាញយកគំរូ JD' }
+  };
+  const tLabels = labels[lang] || labels.zh;
   return {
     inline_keyboard: [
-      [{ text: lang === "zh" ? "在线填写招聘需求" : lang === "en" ? "Fill Hiring Request" : "បំពេញតម្រូវការជ្រើសរើស", callback_data: "employer_online" }],
-      [{ text: lang === "zh" ? "下载招聘需求模板" : lang === "en" ? "Download Hiring Template" : "ទាញយកគំរូ JD", callback_data: "employer_template" }],
+      [{ text: tLabels.online, callback_data: "employer_online" }],
+      [{ text: tLabels.upload, callback_data: "employer_upload_hint" }],
+      [{ text: tLabels.template, callback_data: "employer_template" }],
       [{ text: COPY[lang].menu.back, callback_data: "menu" }],
     ],
   };
