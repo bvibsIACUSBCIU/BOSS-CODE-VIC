@@ -1,7 +1,7 @@
 import { CONFIG } from '../src/config.js';
 import { isAdmin } from '../src/admin/adminGuard.js';
 import { handleAdminCommand, handleAdminCallback } from '../src/handlers/adminHandler.js';
-import { handleFileUpload } from '../src/handlers/uploadHandler.js';
+import { handleFileUpload, isInUploadReview, isEditingUploadField, handleUploadEditInput, handleUploadReviewCallback } from '../src/handlers/uploadHandler.js';
 import { formHandler } from '../src/handlers/formHandler.js';
 import { syncAirtableSchema } from '../src/storage/schemaSync.js';
 
@@ -257,6 +257,14 @@ async function handleUpdate(update) {
     return;
   }
 
+  // 优先处理：用户正在编辑 upload_review 中的某个字段（拦截文字输入）
+  if (isEditingUploadField(chatId)) {
+    if (text) {
+      await handleUploadEditInput(chatId, text, sendMessage);
+    }
+    return;
+  }
+
   if (formHandler.isFilling(chatId)) {
     const lang = USER_LANG.get(chatId) || "zh";
     if (text) {
@@ -339,6 +347,15 @@ async function handleCallback(callback) {
   const lang = USER_LANG.get(chatId) || "zh";
 
   await telegram("answerCallbackQuery", { callback_query_id: callback.id });
+
+  if (data.startsWith('upload_review:')) {
+    await handleUploadReviewCallback(chatId, data, sendMessage, async (notifyText) => {
+      if (CONFIG.telegram.internalChatId) {
+        await sendMessage(CONFIG.telegram.internalChatId, notifyText);
+      }
+    });
+    return;
+  }
 
   if (data.startsWith("form:")) {
     await formHandler.handleFormCallback(chatId, data, lang, sendMessage, async (notifyText) => {
