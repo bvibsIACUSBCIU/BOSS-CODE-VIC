@@ -4,6 +4,7 @@ import { handleAdminCommand, handleAdminCallback } from '../src/handlers/adminHa
 import { handleFileUpload, isInUploadReview, isEditingUploadField, handleUploadEditInput, handleUploadReviewCallback } from '../src/handlers/uploadHandler.js';
 import { formHandler } from '../src/handlers/formHandler.js';
 import { syncAirtableSchema } from '../src/storage/schemaSync.js';
+import { initRag, answerQuestion, addKnowledgeFile } from '../src/ai/ragEngine.js';
 
 const WEBSITE_URL = CONFIG.website;
 const TOKEN = CONFIG.telegram.token;
@@ -45,7 +46,7 @@ const COPY = {
     templates:
       "请选择需要下载的模板：\n\n1. 求职者简历模板\n2. 企业招聘需求模板\n\n模板填写完成后，可以直接上传到本 Bot。",
     support:
-      "联系客服：\n\nTelegram：请点击下方按钮联系\n官网：{{website}}\n\n如您已经提交资料，请不要重复提交，顾问会按照提交顺序审核并联系您。",
+      "您好！我是 Boss Hiring 的 AI 智能客服。您可以在这里直接输入您的问题，我将为您解答。\n\n💬 *人工客服*\n如需直接联系人工客服，请联系：{{cs_contact}} 或点击下方按钮。",
     uploadReceived:
       "资料已收到。Boss Hiring 顾问会审核文件，并由 AI 辅助整理摘要、标签和缺失项。请保持 Telegram 或电话畅通。",
     onlineCandidate:
@@ -94,7 +95,7 @@ const COPY = {
     templates:
       "Please choose a template:\n\n1. Candidate resume template\n2. Employer hiring request template\n\nAfter completion, upload the file directly to this Bot.",
     support:
-      "Contact support:\n\nTelegram: use the button below\nWebsite: {{website}}\n\nIf you already submitted information, please do not submit repeatedly. Our consultants will review and contact you in order.",
+      "🤖 *AI Support Online*\n\nHello! I am the Boss Hiring AI customer service. You can type your questions directly here, and I will answer using our corporate knowledge base.\n\n💬 *Human Support*\nTo contact human support directly, please reach out to: {{cs_contact}} or click the button below.",
     uploadReceived:
       "Your file has been received. Boss Hiring consultants will review it, and AI will assist with summary, tags, and missing information checks.",
     onlineCandidate:
@@ -143,7 +144,7 @@ const COPY = {
     templates:
       "សូមជ្រើសរើសគំរូឯកសារ៖\n\n1. គំរូ CV បេក្ខជន\n2. គំរូតម្រូវការជ្រើសរើសរបស់ក្រុមហ៊ុន\n\nបំពេញរួច អាចផ្ញើឯកសារឡើងវិញក្នុង Bot នេះ។",
     support:
-      "ទាក់ទងសេវាកម្ម៖\n\nTelegram: ប្រើប៊ូតុងខាងក្រោម\nWebsite: {{website}}\n\nប្រសិនបើបានបញ្ជូនព័ត៌មានរួច សូមកុំបញ្ជូនម្តងទៀត។",
+      "🤖 *សេវា AI ដំណើរការ*\n\nសួស្តី! ខ្ញុំជាភ្នាក់ងារ AI របស់ Boss Hiring។ អ្នកអាចសួរដេញដោលសំណួរបាន។\n\n💬 *សេវាអតិថិជន*\nដើម្បីទាក់ទងផ្ទាល់៖ {{cs_contact}}។",
     uploadReceived:
       "បានទទួលឯកសាររបស់អ្នកហើយ។ Boss Hiring នឹងពិនិត្យ ហើយ AI នឹងជួយសង្ខេប បង្កើតស្លាក និងពិនិត្យព័ត៌មានខ្វះ។",
     onlineCandidate:
@@ -168,7 +169,24 @@ const COPY = {
   },
 };
 
+let ragInitPromise = null;
+async function ensureRag() {
+  if (!ragInitPromise) {
+    ragInitPromise = initRag().catch(err => {
+      console.error('RAG Initialization failed:', err.message);
+      ragInitPromise = null; // retry next time
+    });
+  }
+  return ragInitPromise;
+}
+
 export default async function handler(request, response) {
+  try {
+    await ensureRag();
+  } catch (ragErr) {
+    console.error("Failed to initialize RAG on request:", ragErr.message);
+  }
+
   try {
     await syncAirtableSchema();
   } catch (syncErr) {
@@ -311,7 +329,8 @@ async function handleUpdate(update) {
 
   if (text === "/contact") {
     const lang = USER_LANG.get(chatId) || "zh";
-    await sendMessage(chatId, COPY[lang].support.replace("{{website}}", WEBSITE_URL), supportKeyboard(lang));
+    const csContact = CONFIG.telegram.csContact || '';
+    await sendMessage(chatId, COPY[lang].support.replace("{{cs_contact}}", csContact), supportKeyboard(lang));
     return;
   }
 
@@ -330,6 +349,12 @@ async function handleUpdate(update) {
   if (message.document || message.photo) {
     const context = USER_CONTEXT.get(chatId) || "unknown";
     const lang = USER_LANG.get(chatId) || "zh";
+
+    if (context === "admin_upload_rag" && isAdmin(chatId)) {
+      await handleAdminRagUpload(chatId, message, sendMessage);
+      return;
+    }
+
     await handleFileUpload(chatId, message, context, lang, sendMessage, async (notifyText) => {
       if (CONFIG.telegram.internalChatId) {
         await sendMessage(CONFIG.telegram.internalChatId, notifyText);
@@ -363,6 +388,12 @@ async function handleCallback(callback) {
         await sendMessage(CONFIG.telegram.internalChatId, notifyText);
       }
     });
+    return;
+  }
+
+  if (isAdmin(chatId) && data === 'admin:rag_upload_prompt') {
+    USER_CONTEXT.set(chatId, "admin_upload_rag");
+    await sendMessage(chatId, "📂 *上传文件补充知识库*\n\n请直接向本聊天框发送您要补充的知识库文件（仅支持 `.txt` 或 `.csv` 格式，文件大小限制在 5MB 以内）。\n\n系统会自动下载、解析并生成向量索引，补充到当前的 RAG 检索库中。");
     return;
   }
 
@@ -419,7 +450,8 @@ async function handleCallback(callback) {
   }
 
   if (data === "support") {
-    await sendMessage(chatId, t.support.replace("{{website}}", WEBSITE_URL), supportKeyboard(lang));
+    const csContact = CONFIG.telegram.csContact || '';
+    await sendMessage(chatId, t.support.replace("{{cs_contact}}", csContact), supportKeyboard(lang));
     return;
   }
 
@@ -599,12 +631,18 @@ function websiteKeyboard(lang) {
 }
 
 function supportKeyboard(lang) {
-  return {
-    inline_keyboard: [
-      [{ text: COPY[lang].menu.website, url: WEBSITE_URL }],
-      [{ text: COPY[lang].menu.back, callback_data: "menu" }],
-    ],
-  };
+  const keyboard = [];
+  const csContact = CONFIG.telegram.csContact || '';
+  if (csContact) {
+    const cleanUsername = csContact.replace('@', '').trim();
+    keyboard.push([{ 
+      text: lang === 'zh' ? '💬 联系人工客服' : lang === 'en' ? '💬 Contact Human Support' : '💬 ទាក់ទងសេវាកម្ម', 
+      url: `https://t.me/${cleanUsername}` 
+    }]);
+  }
+  keyboard.push([{ text: COPY[lang].menu.website, url: WEBSITE_URL }]);
+  keyboard.push([{ text: COPY[lang].menu.back, callback_data: "menu" }]);
+  return { inline_keyboard: keyboard };
 }
 
 async function handleMenuText(chatId, text) {
@@ -646,7 +684,8 @@ async function handleMenuText(chatId, text) {
     }
     if (normalized === menu.support) {
       USER_LANG.set(chatId, lang);
-      await sendMessage(chatId, copy.support.replace("{{website}}", WEBSITE_URL), supportKeyboard(lang));
+      const csContact = CONFIG.telegram.csContact || '';
+      await sendMessage(chatId, copy.support.replace("{{cs_contact}}", csContact), supportKeyboard(lang));
       return true;
     }
   }
@@ -720,7 +759,9 @@ async function handleCustomerChat(chatId, message) {
   }
 
   if (intent === "support") {
-    await sendMessage(chatId, t.concierge.support, supportKeyboard(lang));
+    const csContact = CONFIG.telegram.csContact || '';
+    const textReply = t.support.replace("{{cs_contact}}", csContact);
+    await sendMessage(chatId, textReply, supportKeyboard(lang));
     return;
   }
 
@@ -729,13 +770,25 @@ async function handleCustomerChat(chatId, message) {
     return;
   }
 
-  const knowledgeReply = knowledgeAnswer(lang, intent);
-  if (knowledgeReply) {
-    await sendMessage(chatId, knowledgeReply, serviceMenuKeyboard(lang));
-    return;
+  // Any other text is treated as an open-ended customer support query answered by RAG
+  await sendMessage(chatId, lang === 'zh' ? "⏳ AI 智能客服正在查询知识库，请稍候..." : lang === 'en' ? "⏳ AI support is searching the knowledge base, please wait..." : "⏳ ភ្នាក់ងារ AI កំពុងស្វែងរកព័ត៌មាន សូមរង់ចាំ...");
+  try {
+    const ragResult = await answerQuestion(text, lang);
+    if (ragResult.isHighRisk) {
+      const csContact = CONFIG.telegram.csContact || '';
+      const fallbackMsg = lang === 'zh' 
+        ? `⚠️ 您的问题涉及费用、合同、保证期或隐私等敏感业务政策，为了确保信息准确，已为您转接至人工客服。\n\n请直接联系我们的顾问：${csContact}` 
+        : lang === 'en'
+        ? `⚠️ Your question involves fees, contracts, guarantee periods, or privacy rules. To ensure accuracy, we have transferred you to human support.\n\nPlease contact our consultant: ${csContact}`
+        : `⚠️ សំណួររបស់អ្នកពាក់ព័ន្ធនឹងថ្លៃសេវា ឬកិច្ចសន្យា។ សូមទាក់ទងមកកាន់ទីប្រឹក្សារបស់យើងផ្ទាល់៖ ${csContact}`;
+      await sendMessage(chatId, fallbackMsg, supportKeyboard(lang));
+    } else {
+      await sendMessage(chatId, ragResult.answer, serviceMenuKeyboard(lang));
+    }
+  } catch (err) {
+    console.error('RAG Q&A error:', err.message);
+    await sendMessage(chatId, t.concierge.fallback, serviceMenuKeyboard(lang));
   }
-
-  await sendMessage(chatId, t.concierge.fallback, serviceMenuKeyboard(lang));
 }
 
 function detectLanguage(text, fallback) {
@@ -1051,3 +1104,49 @@ async function sendMessage(chatId, text, replyMarkup) {
     disable_web_page_preview: true,
   });
 }
+
+async function handleAdminRagUpload(chatId, message, replyFunc) {
+  if (message.photo) {
+    await replyFunc(chatId, "❌ 补充知识库仅支持 `.txt` 或 `.csv` 格式的文本文件，不支持图片。");
+    return;
+  }
+
+  const doc = message.document;
+  if (!doc) {
+    await replyFunc(chatId, "❌ 未能识别到有效的文档文件。");
+    return;
+  }
+
+  const fileName = doc.file_name || '';
+  const isTxt = fileName.endsWith('.txt');
+  const isCsv = fileName.endsWith('.csv');
+
+  if (!isTxt && !isCsv) {
+    await replyFunc(chatId, "❌ 补充知识库仅支持 `.txt` 或 `.csv` 格式的文本文件。");
+    return;
+  }
+
+  await replyFunc(chatId, "⏳ 已收到知识库文件，正在下载并解析...");
+
+  try {
+    const fileId = doc.file_id;
+    const res = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+    const json = await res.json();
+    if (!json.ok) throw new Error(`getFile failed: ${json.description}`);
+    const filePath = json.result.file_path;
+    const downloadUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
+
+    const fileResponse = await fetch(downloadUrl);
+    if (!fileResponse.ok) throw new Error(`下载文件失败，HTTP状态：${fileResponse.status}`);
+    const buffer = Buffer.from(await fileResponse.arrayBuffer());
+
+    const savedName = await addKnowledgeFile(fileName, buffer);
+    USER_CONTEXT.delete(chatId);
+
+    await replyFunc(chatId, `✅ *知识库补充成功！*\n\n已成功解析文件并在向量库中索引为：\`${savedName}\`。\n\nRAG 检索模型已重新加载上线！`);
+  } catch (err) {
+    console.error('Admin RAG upload failed:', err);
+    await replyFunc(chatId, `❌ *知识库补充失败*，错误原因：${err.message}`);
+  }
+}
+

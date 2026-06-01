@@ -25,6 +25,7 @@ export const CONFIG = {
     internalChatId: process.env.INTERNAL_TELEGRAM_CHAT_ID || '',
     adminIds: (process.env.TG_ADMIN_ID || '').split(',').map(s => s.trim()).filter(Boolean),
     webhookSecret: process.env.WEBHOOK_SECRET || '',
+    csContact: process.env.TG_CS_COUNT || '',
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,

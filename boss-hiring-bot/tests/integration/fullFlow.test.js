@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// 1. Mock Google Generative AI
 vi.mock('@google/generative-ai', () => {
   return {
     GoogleGenerativeAI: vi.fn().mockImplementation(() => ({
@@ -33,6 +32,9 @@ vi.mock('@google/generative-ai', () => {
               qualityScore: 85
             })
           }
+        }),
+        embedContent: vi.fn().mockResolvedValue({
+          embedding: { values: Array(768).fill(0.1) }
         })
       }))
     }))

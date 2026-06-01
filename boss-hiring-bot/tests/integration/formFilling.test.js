@@ -26,6 +26,9 @@ vi.mock('@google/generative-ai', () => ({
             missingFields: []
           })
         }
+      }),
+      embedContent: vi.fn().mockResolvedValue({
+        embedding: { values: Array(768).fill(0.1) }
       })
     }))
   }))
@@ -69,6 +72,8 @@ describe('Online Form Filling Stateful Workflow', () => {
   const notifyInternalFunc = vi.fn();
 
   beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-05-15T12:00:00Z'));
     messages = [];
     vi.clearAllMocks();
     formHandler.cancelForm('user123');

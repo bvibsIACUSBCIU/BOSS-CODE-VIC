@@ -117,3 +117,20 @@ export async function callGeminiJSON(modelName, prompt, fileBuffer, mimeType) {
     throw new Error(`Gemini response is not valid JSON. Response received: ${responseText.slice(0, 300)}`);
   }
 }
+
+/**
+ * Call Gemini to get embeddings for a text chunk using text-embedding-004
+ * 
+ * @param {string} text 
+ * @returns {Promise<number[]>}
+ */
+export async function getEmbedding(text) {
+  const genAI = getGenAI();
+  const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+  const result = await model.embedContent(text);
+  if (result && result.embedding && result.embedding.values) {
+    return result.embedding.values;
+  }
+  throw new Error('Failed to retrieve embedding values from Gemini');
+}
+
