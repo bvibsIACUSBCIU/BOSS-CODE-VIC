@@ -30,14 +30,13 @@ export const CONFIG = {
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
     models: {
-      // Use standard names that maps to Gemini 1.5 Pro / Flash (called Gemini 3.1 pro, flash by the user)
       // Allow overriding via environment variables for maximum flexibility
       pro: process.env.GEMINI_PRO_MODEL || 'gemini-3.1-pro-preview',
       flash: process.env.GEMINI_FLASH_MODEL || 'gemini-3.5-flash',
     }
   },
   airtable: {
-    pat: process.env.AIRTABLE_PAT || 'patL9Y1ki6JUWGsbs.bb9d0abe02be8d072e2edd6c048bfeb92d8694da69ff5199efe7f4341067f44',
+    pat: process.env.AIRTABLE_PAT,
     baseId: process.env.AIRTABLE_BASE_ID,
   },
   website: process.env.BOSS_HIRING_WEBSITE || 'https://boss-hiring.vercel.app/#company',

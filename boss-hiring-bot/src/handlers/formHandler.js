@@ -349,14 +349,15 @@ const EMPLOYER_QUESTIONS = [
   },
   {
     field: 'acceptServiceFeeRules',
+    // 问题3优化：追加说明，消除用户"盲签"顾虑
     prompts: {
-      zh: '您是否接受 Boss Hiring 服务费规则：',
-      en: 'Do you accept Boss Hiring\'s service fee rules?',
-      km: 'តើអ្នកយល់ព្រមតាមច្បាប់កម្រៃសេវារបស់ Boss Hiring ទេ?៖'
+      zh: '最后一步：您是否愿意进一步了解 Boss Hiring 服务合作规则？\n\n💡 说明：具体服务费率、保证期和补录规则将由顾问在推荐候选人前单独确认，此处仅表示您愿意继续沟通合作。',
+      en: "Last step: Are you open to learning more about Boss Hiring's cooperation terms?\n\n💡 Note: The exact fee, guarantee period, and replacement policy will be confirmed by a consultant before any candidate is recommended. This only indicates your willingness to proceed.",
+      km: 'ជំហានចុងក្រោយ: តើអ្នកព្រមរៀនបន្ថែមអំពីលក្ខខណ្ឌសហការ Boss Hiring ទេ?\n\n💡 ចំណាំ: ថ្លៃសេវាត្រឹមត្រូវ និងល័ក្ខខ័ណ្ឌនឹងត្រូវបញ្ជាក់ដោយទីប្រឹក្សា មុនណែនាំបេក្ខជន។'
     },
     options: [
-      { text: { zh: '是', en: 'Yes', km: 'បាទ/ចាស' }, val: '是' },
-      { text: { zh: '否', en: 'No', km: 'ទេ' }, val: '否' }
+      { text: { zh: '是，愿意继续沟通', en: 'Yes, happy to proceed', km: 'បាទ/ចាស ព្រម' }, val: '是' },
+      { text: { zh: '否，暂不需要', en: 'No, not for now', km: 'ទេ មិនទាន់' }, val: '否' }
     ]
   },
   {
@@ -394,7 +395,26 @@ export const formHandler = {
       step: 0,
       answers: {}
     });
-    
+
+    // 问题1优化：开场白说明问卷长度，降低用户中途放弃率
+    const totalQuestions = type === 'candidate' ? CANDIDATE_QUESTIONS.length : EMPLOYER_QUESTIONS.length;
+    const introMsgs = {
+      zh: {
+        candidate: `📝 接下来需要回答 ${totalQuestions} 个问题，约需 3 分钟。\n\n您也可以随时点击「取消填写」退出，改为直接上传简历文件。`,
+        employer:  `📝 接下来需要回答 ${totalQuestions} 个问题，约需 3 分钟。\n\n您也可以随时点击「取消填写」退出，改为直接上传 JD 文件。`,
+      },
+      en: {
+        candidate: `📝 There are ${totalQuestions} questions in total, about 3 minutes.\n\nYou can tap "Cancel" at any time and upload your resume file instead.`,
+        employer:  `📝 There are ${totalQuestions} questions in total, about 3 minutes.\n\nYou can tap "Cancel" at any time and upload your JD file instead.`,
+      },
+      km: {
+        candidate: `📝 មានសំណួរ ${totalQuestions} ប្រហែល ៣ នាទី។\n\nអ្នកអាចចុច «បោះបង់» គ្រប់ពេល ហើយផ្ញើ CV ជំនួសវិញ។`,
+        employer:  `📝 មានសំណួរ ${totalQuestions} ប្រហែល ៣ នាទី។\n\nអ្នកអាចចុច «បោះបង់» គ្រប់ពេល ហើយផ្ញើ JD ជំនួសវិញ។`,
+      },
+    };
+    const introMsg = (introMsgs[lang] || introMsgs.zh)[type] || introMsgs.zh[type];
+    await replyFunc(sChatId, introMsg);
+
     await sendQuestion(sChatId, lang, replyFunc);
   },
 
@@ -668,16 +688,22 @@ async function submitForm(chatId, state, lang, replyFunc, notifyInternalFunc) {
   );
 
   // Step 7: Inform the client of completion
+  // 问题7优化：追加下一步引导，避免提交后界面「死掉」
+  const nextStepGuide = {
+    zh: '\n\n💬 如有任何疑问，可在此直接输入提问，或使用下方菜单选择其他服务。',
+    en: '\n\nFeel free to ask any questions here, or use the menu below for more services.',
+    km: '\n\nអ្នកអាចសួរសំណួរបន្ថែម ឬប្រើម៉ឺនុយខាងក្រោមដើម្បីរកសេវាបន្ថែម។',
+  };
   const completionMsg = isCandidate
     ? {
-        zh: `提交成功！\n\n您的简历已整理完毕，生成序号：*${recordId}*。\n\n我们会保护您的隐私（不会对外直接暴露您的姓名 and 联系方式），根据 AI 匹配度为您推荐岗位，并在顾问确认后与您联系。`,
-        en: `Submitted successfully!\n\nYour profile has been processed with ID: *${recordId}*.\n\nWe protect your privacy by hiding contact details, using AI to match jobs, and our consultant will reach out to you once matching is confirmed.`,
-        km: `បានបញ្ជូនដោយជោគជ័យ!\n\nប្រវត្តិរូបរបស់អ្នកត្រូវបានចុះបញ្ជីលេខ៖ *${recordId}*។\n\nយើងខ្ញុំនឹងរក្សាការសម្ងាត់ព័ត៌មានរបស់អ្នក ផ្គូផ្គងជាមួយឱកាសការងារ AI ហើយទីប្រឹក្សានឹងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗ។`
+        zh: `提交成功！✅\n\n您的简历已整理完毕，生成序号：*${recordId}*。\n\n我们会保护您的隐私（不会对外直接暴露您的姓名和联系方式），根据匹配度为您推荐岗位，并在顾问确认后与您联系。${nextStepGuide.zh}`,
+        en: `Submitted successfully! ✅\n\nYour profile has been processed with ID: *${recordId}*.\n\nWe protect your privacy by hiding contact details, using AI to match jobs, and our consultant will reach out to you once matching is confirmed.${nextStepGuide.en}`,
+        km: `បានបញ្ជូនដោយជោគជ័យ! ✅\n\nប្រវត្តិរូបរបស់អ្នកត្រូវបានចុះបញ្ជីលេខ៖ *${recordId}*។\n\nយើងខ្ញុំនឹងរក្សាការសម្ងាត់ព័ត៌មានរបស់អ្នក ផ្គូផ្គងជាមួយឱកាសការងារ AI ហើយទីប្រឹក្សានឹងទាក់ទងទៅវិញក្នុងពេលឆាប់ៗ។${nextStepGuide.km}`
       }
     : {
-        zh: `需求提交成功！\n\n您的岗位登记已处理完毕，生成序号：*${recordId}*。\n\n顾问会在确认合作规则与服务条款后，向您推荐匹配的候选人。`,
-        en: `Hiring request submitted!\n\nYour listing has been registered with ID: *${recordId}*.\n\nOur consultant will verify cooperation rules and then send qualified candidates matching your role.`,
-        km: `បានបញ្ជូនតម្រូវការជ្រើសរើសដោយជោគជ័យ!\n\nតម្រូវការការងារត្រូវបានចុះបញ្ជីលេខ៖ *${recordId}*។\n\nទីប្រឹក្សានឹងទាក់ទងបញ្ជាក់ព័ត៌មាន បន្ទាប់មកណែនាំបេក្ខជនដែលសមរម្យ。`
+        zh: `需求提交成功！✅\n\n您的岗位登记已处理完毕，生成序号：*${recordId}*。\n\n顾问会在确认合作规则与服务条款后，向您推荐匹配的候选人。${nextStepGuide.zh}`,
+        en: `Hiring request submitted! ✅\n\nYour listing has been registered with ID: *${recordId}*.\n\nOur consultant will verify cooperation rules and then send qualified candidates matching your role.${nextStepGuide.en}`,
+        km: `បានបញ្ជូនតម្រូវការជ្រើសរើសដោយជោគជ័យ! ✅\n\nតម្រូវការការងារត្រូវបានចុះបញ្ជីលេខ៖ *${recordId}*។\n\nទីប្រឹក្សានឹងទាក់ទងបញ្ជាក់ព័ត៌មាន បន្ទាប់មកណែនាំបេក្ខជនដែលសមរម្យ។${nextStepGuide.km}`
       };
 
   await replyFunc(chatId, completionMsg[lang] || completionMsg.zh);

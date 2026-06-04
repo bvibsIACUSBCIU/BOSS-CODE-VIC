@@ -83,19 +83,20 @@ describe('Online Form Filling Stateful Workflow', () => {
     // 1. Start the form
     await formHandler.startForm('user123', 'candidate', 'zh', replyFunc);
     expect(formHandler.isFilling('user123')).toBe(true);
-    expect(messages.length).toBe(1);
-    expect(messages[0].text).toContain('请输入您的姓名');
+    expect(messages.length).toBe(2);
+    expect(messages[0].text).toContain('接下来需要回答');
+    expect(messages[1].text).toContain('请输入您的姓名');
 
     // 2. Answer Name
     await formHandler.handleFormInput('user123', 'Mark', 'zh', replyFunc, notifyInternalFunc);
-    expect(messages.length).toBe(2);
-    expect(messages[1].text).toContain('请选择您的性别');
-    expect(messages[1].markup.inline_keyboard[0][0].text).toContain('男');
+    expect(messages.length).toBe(3);
+    expect(messages[2].text).toContain('请选择您的性别');
+    expect(messages[2].markup.inline_keyboard[0][0].text).toContain('男');
 
     // 3. Select Gender via callback option button
     await formHandler.handleFormCallback('user123', 'form:opt:男', 'zh', replyFunc, notifyInternalFunc);
-    expect(messages.length).toBe(3);
-    expect(messages[2].text).toContain('请输入您的年龄');
+    expect(messages.length).toBe(4);
+    expect(messages[3].text).toContain('请输入您的年龄');
 
     // 4. Answer Age
     await formHandler.handleFormInput('user123', '25', 'zh', replyFunc, notifyInternalFunc);

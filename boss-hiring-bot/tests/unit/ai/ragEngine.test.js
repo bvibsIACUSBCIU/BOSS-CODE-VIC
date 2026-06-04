@@ -7,7 +7,7 @@ vi.mock('../../../src/ai/geminiClient.js', () => ({
 }));
 
 import { getEmbedding, callGemini } from '../../../src/ai/geminiClient.js';
-import { isHighRiskQuery, searchRag, answerQuestion, initRag, vectorIndex } from '../../../src/ai/ragEngine.js';
+import { isHighRiskQuery, searchRag, answerQuestion, initRag, vectorIndex, faqList, matchDirectFaq } from '../../../src/ai/ragEngine.js';
 
 describe('RAG Engine', () => {
   beforeEach(() => {
@@ -67,6 +67,56 @@ describe('RAG Engine', () => {
       expect(result.answer).toBe('这是 AI 智能客服根据企业知识库为您找到的答案...');
       expect(getEmbedding).toHaveBeenCalledWith('我想找工作怎么提交资料？');
       expect(callGemini).toHaveBeenCalled();
+    });
+  });
+
+  describe('matchDirectFaq() and direct path in answerQuestion()', () => {
+    beforeEach(() => {
+      faqList.length = 0;
+      faqList.push({
+        id: 'FAQ-ZH-001',
+        category: '公司介绍',
+        language: 'zh',
+        question: 'Boss Hiring 是什么',
+        keywords: ['Boss Hiring', '你们是做什么', '公司介绍'],
+        answer: 'Boss Hiring 是 AI 驱动的人才招聘与企业服务平台。',
+        button: '访问官网 ↗'
+      });
+      faqList.push({
+        id: 'FAQ-EN-001',
+        category: 'Company',
+        language: 'en',
+        question: 'What is Boss Hiring',
+        keywords: ['what is boss hiring', 'company'],
+        answer: 'Boss Hiring is an AI-driven talent recruitment platform.',
+        button: 'Visit Website ↗'
+      });
+    });
+
+    it('should match direct exact questions', () => {
+      const match = matchDirectFaq('Boss Hiring 是什么？', 'zh');
+      expect(match).toBe('Boss Hiring 是 AI 驱动的人才招聘与企业服务平台。');
+
+      const matchEn = matchDirectFaq('What is Boss Hiring?', 'en');
+      expect(matchEn).toBe('Boss Hiring is an AI-driven talent recruitment platform.');
+    });
+
+    it('should match keywords and prioritize longer matches', () => {
+      const match = matchDirectFaq('请问你们是做什么的？', 'zh');
+      expect(match).toBe('Boss Hiring 是 AI 驱动的人才招聘与企业服务平台。');
+    });
+
+    it('should bypass Gemini API in answerQuestion for direct FAQ matches', async () => {
+      const result = await answerQuestion('Boss Hiring 是什么？', 'zh');
+      expect(result.isHighRisk).toBe(false);
+      expect(result.answer).toBe('Boss Hiring 是 AI 驱动的人才招聘与企业服务平台。');
+      expect(getEmbedding).not.toHaveBeenCalled();
+      expect(callGemini).not.toHaveBeenCalled();
+    });
+
+    it('should return null if no direct match is found', () => {
+      const match = matchDirectFaq('未知的提问', 'zh');
+      expect(match).toBeNull();
     });
   });
 });

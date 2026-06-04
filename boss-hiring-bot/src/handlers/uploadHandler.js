@@ -346,6 +346,24 @@ async function sendReviewCard(chatId, replyFunc) {
   if (aiResult.aiSummary) text += c.aiSummary(aiResult.aiSummary);
   if (aiResult.qualityScore != null) text += c.aiScore(aiResult.qualityScore);
 
+  // 问题4优化：在按钮区前加引导文字，降低用户面对多个按钮的认知压力
+  const actionGuide = {
+    zh: {
+      hasMissing: '\n\n💡 *建议先点击红色"补充"按钮填写缺失信息，再确认提交。*',
+      allGood:    '\n\n✅ *信息看起来完整，可直接点击"确认提交"，或按需修改字段。*',
+    },
+    en: {
+      hasMissing: '\n\n💡 *We recommend filling in the missing fields first, then confirm submission.*',
+      allGood:    '\n\n✅ *Looks complete! You can confirm submission directly, or edit any field if needed.*',
+    },
+    km: {
+      hasMissing: '\n\n💡 *ណែនាំឱ្យបំពេញព័ត៌មានខ្វះ មុនបញ្ជូន។*',
+      allGood:    '\n\n✅ *ព័ត៌មានបានគ្រប់! អ្នកអាចបញ្ជូនបានដោយផ្ទាល់ ឬកែតាមការចង់បាន។*',
+    },
+  };
+  const guide = actionGuide[lang] || actionGuide.zh;
+  text += missing.length > 0 ? guide.hasMissing : guide.allGood;
+
   // ── 构建按钮布局 ──
   const inline_keyboard = [];
 

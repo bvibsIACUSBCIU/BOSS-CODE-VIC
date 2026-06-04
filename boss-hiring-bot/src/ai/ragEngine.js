@@ -9,6 +9,7 @@ const CACHE_FILE_PATH = path.join(KNOWLEDGE_BASE_DIR, '.embeddings_cache.json');
 // In-memory vector store
 // Array of { text: string, source: string, embedding: number[] }
 export let vectorIndex = [];
+export let faqList = [];
 let cacheData = {};
 
 /**
@@ -39,6 +40,7 @@ export async function initRag() {
   // Scan files in knowledge-base
   const files = fs.readdirSync(KNOWLEDGE_BASE_DIR);
   const newIndex = [];
+  const tempFaqList = [];
 
   for (const file of files) {
     if (file.startsWith('.') || file === 'README.md') continue;
@@ -54,6 +56,53 @@ export async function initRag() {
       chunks = chunkMarkdown(content, file);
     } else if (file.endsWith('.csv')) {
       chunks = chunkCSV(content, file);
+      if (file === 'boss-hiring-faq.csv') {
+        try {
+          const rows = parseCSV(content);
+          if (rows.length > 0) {
+            const headers = rows[0].map(h => h.trim());
+            for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+              if (row.length === 0 || (row.length === 1 && row[0] === "")) continue;
+
+              const getVal = (headerName) => {
+                const idx = headers.indexOf(headerName);
+                return idx !== -1 ? row[idx]?.trim() : "";
+              };
+
+              const id = getVal("ID");
+              const category = getVal("分类");
+              const langText = getVal("语言");
+              const question = getVal("用户问题");
+              const keywordsStr = getVal("关键词");
+              const answer = getVal("标准回答");
+              const button = getVal("推荐按钮");
+              const enabledStr = getVal("是否启用");
+
+              const enabled = (enabledStr.toUpperCase() === "TRUE" || enabledStr === "是");
+              if (!enabled) continue;
+
+              let language = "zh";
+              if (langText === "English") language = "en";
+              else if (langText === "Khmer") language = "km";
+
+              const keywords = keywordsStr ? keywordsStr.split(',').map(k => k.trim().toLowerCase()).filter(Boolean) : [];
+
+              tempFaqList.push({
+                id,
+                category,
+                language,
+                question,
+                keywords,
+                answer,
+                button
+              });
+            }
+          }
+        } catch (faqErr) {
+          console.error('[RAG Engine] Failed to parse boss-hiring-faq.csv for direct matching:', faqErr.message);
+        }
+      }
     } else if (file.endsWith('.txt')) {
       chunks = chunkTXT(content, file);
     }
@@ -79,7 +128,9 @@ export async function initRag() {
   }
 
   vectorIndex = newIndex;
+  faqList = tempFaqList;
   console.log(`[RAG Engine] Index built successfully. Total chunks: ${vectorIndex.length}`);
+  console.log(`[RAG Engine] Loaded ${faqList.length} FAQs for direct matching.`);
 
   // Persist updated cache
   try {
@@ -162,6 +213,63 @@ export function isHighRiskQuery(query) {
 }
 
 /**
+ * Normalizes text by converting to lowercase and removing all spaces and punctuation/symbols
+ * to improve matching robustness.
+ */
+function normalizeText(text) {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .replace(/[\s\p{P}\p{S}]/gu, "");
+}
+
+/**
+ * Attempt to match the user query directly against the FAQ database
+ * 
+ * @param {string} query 
+ * @param {string} lang 
+ * @returns {string|null}
+ */
+export function matchDirectFaq(query, lang = 'zh') {
+  if (!faqList || faqList.length === 0) return null;
+
+  const normQuery = normalizeText(query);
+  if (!normQuery) return null;
+
+  const langFaqs = faqList.filter(faq => faq.language === lang);
+
+  // 1. Try exact normalized question match
+  const exactMatch = langFaqs.find(faq => normalizeText(faq.question) === normQuery);
+  if (exactMatch) {
+    console.log(`[RAG Engine] Direct FAQ exact match: "${query}" -> ID: ${exactMatch.id}`);
+    return exactMatch.answer;
+  }
+
+  // 2. Try keyword match (prioritize the longest keyword matched)
+  let bestMatch = null;
+  let maxKeywordLength = 0;
+
+  for (const faq of langFaqs) {
+    for (const keyword of faq.keywords) {
+      const normKeyword = normalizeText(keyword);
+      if (normKeyword && normQuery.includes(normKeyword)) {
+        if (normKeyword.length > maxKeywordLength) {
+          maxKeywordLength = normKeyword.length;
+          bestMatch = faq;
+        }
+      }
+    }
+  }
+
+  if (bestMatch) {
+    console.log(`[RAG Engine] Direct FAQ keyword match: "${query}" (matched: "${maxKeywordLength}" chars) -> ID: ${bestMatch.id}`);
+    return bestMatch.answer;
+  }
+
+  return null;
+}
+
+/**
  * Answer customer question using retrieved RAG context and Gemini Flash
  * 
  * @param {string} query 
@@ -174,7 +282,13 @@ export async function answerQuestion(query, lang = 'zh') {
     return { isHighRisk: true, answer: '' };
   }
 
-  // 2. Search relevant chunks
+  // 2. Try direct FAQ match (fast path)
+  const directAnswer = matchDirectFaq(query, lang);
+  if (directAnswer) {
+    return { isHighRisk: false, answer: directAnswer };
+  }
+
+  // 3. Search relevant chunks (slow path fallback)
   const chunks = await searchRag(query, 4);
   const context = chunks.map(c => `[来源: ${c.source}]\n${c.text}`).join('\n\n');
 

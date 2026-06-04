@@ -22,7 +22,7 @@ const USER_CONTEXT = new Map();
 const COPY = {
   zh: {
     intro:
-      "欢迎来到 Boss Hiring 官方服务入口。\n\nBoss Hiring 是 AI 驱动的人才招聘与企业服务平台，专注为柬埔寨企业提供招聘需求收集、候选人筛选、面试安排、入职跟进与企业品牌曝光服务。\n\n请选择您需要的语言：",
+      "欢迎来到 Boss Hiring 官方服务入口。\n\nBoss Hiring 是 AI 驱动的人才招聘与企业服务平台，专注为柬埔寨企业提供招聘需求收集、候选人筛选、面试安排、入职跟进与企业品牌曝光服务。",
     menuTitle: "请选择您需要的服务：",
     menu: {
       candidate: "我要找工作",
@@ -36,7 +36,7 @@ const COPY = {
     },
     commands:
       "您可以通过下方 Telegram 菜单选择服务，也可以直接告诉我您的需求。\n\n例如：\n- 我想找工作\n- 我们公司要招聘\n- 想了解 Boss来了\n- 我要下载模板",
-    menuHint: "您也可以直接输入问题，我会按照 Boss Hiring 的服务流程为您解答。",
+    menuHint: "您也可以直接输入问题，我会为您解答。",
     candidate:
       "求职者资料提交方式：\n\n您可以在线填写资料，也可以下载简历模板填写后上传。如果您已经有简历，可以直接上传 Word / PDF / 图片。",
     employer:
@@ -48,30 +48,30 @@ const COPY = {
     support:
       "您好！我是 Boss Hiring 的 AI 智能客服。您可以在这里直接输入您的问题，我将为您解答。\n\n💬 *人工客服*\n如需直接联系人工客服，请联系：{{cs_contact}} 或点击下方按钮。",
     uploadReceived:
-      "资料已收到。Boss Hiring 顾问会审核文件，并由 AI 辅助整理摘要、标签和缺失项。请保持 Telegram 或电话畅通。",
+      "资料已收到。Boss Hiring 顾问会审核文件。请保持 Telegram 或电话畅通。",
     onlineCandidate:
-      "在线填写功能建议下一步接入 Telegram Mini App 或分步问答。\n\n第一阶段低成本方案：请先下载简历模板填写后上传，或直接上传已有简历。",
+      "请先下载简历模板填写后上传，或直接上传已有简历，您也可以选择在线填写资料",
     onlineEmployer:
-      "在线填写功能建议下一步接入 Telegram Mini App 或分步问答。\n\n第一阶段低成本方案：请先下载招聘需求模板填写后上传，或直接上传已有 JD。",
+      "请先下载招聘需求模板填写后上传，或直接上传已有JD，您也可以选择在线填写资料",
     website: "点击访问 Boss Hiring 官网：{{website}}",
     concierge: {
       candidate:
-        "明白，您现在最重要的是找到合适、稳定、沟通清楚的工作机会。\n\nBoss Hiring 会先帮您整理资料，由 AI 辅助生成简历摘要和人才标签，再由顾问人工审核。这样做的目的不是让系统随便推荐，而是尽量保护您的资料，并把您推荐给更匹配的企业。\n\n您可以直接上传现有简历，也可以先下载模板填写。",
+        "Boss Hiring 会收集您的资料，由公司顾问人工审核并把您推荐给匹配的企业。\n\n您可以直接上传现有简历，也可以先下载模板填写。",
       employer:
-        "明白，招聘最怕的是信息不清、候选人不匹配、沟通成本高。\n\nBoss Hiring 会先帮企业梳理岗位需求，再用 AI 辅助整理岗位摘要和候选人标签，最后由顾问人工筛选与跟进。这样企业不用开放后台自己筛简历，也能更快获得经过整理的候选人。",
+        "Boss Hiring 会帮企业梳理岗位需求，由顾问人工筛选与跟进。\n\n您可以直接上传现有JD，也可以先下载模板填写，或在线填写。",
       show:
-        "如果您希望企业被更多求职者和合作伙伴看见，《Boss来了》会更适合。\n\n它不是简单宣传，而是通过老板访谈、企业环境、团队文化和岗位介绍，帮助企业建立真实可信的雇主形象。",
+        "如果您希望企业被更多求职者和合作伙伴看见，《Boss来了》会更适合，通过老板访谈、企业环境、团队文化和岗位介绍，帮助企业建立真实可信的雇主形象。",
       website:
         "您可以先看官网了解 Boss Hiring 的服务模式、团队介绍和《Boss来了》内容。看完之后，如果需要提交资料或招聘需求，可以回到这里继续操作。",
       support:
-        "我在这里。您可以直接告诉我：您是想找工作、企业招聘、申请 Boss来了采访，还是想了解合作流程。我会根据您的情况引导下一步。",
+        "您可以直接告诉我：您是想找工作、企业招聘、申请 Boss来了采访，还是想了解合作流程。我会根据您的情况引导下一步。",
       fallback:
         "收到。我先帮您判断下一步。\n\n如果您是求职者，可以上传简历或下载模板填写；如果您是企业，可以提交招聘需求或上传 JD；如果您想了解企业访谈和品牌曝光，可以进入《Boss来了》。\n\n您也可以直接用一句话告诉我您的情况，我会继续引导。",
     },
   },
   en: {
     intro:
-      "Welcome to the official Boss Hiring service entrance.\n\nBoss Hiring is an AI-driven talent recruitment and enterprise service platform for Cambodia, covering hiring requests, candidate screening, interview coordination, onboarding follow-up, and employer brand exposure.\n\nPlease choose your language:",
+      "Welcome to the official Boss Hiring service entrance.\n\nBoss Hiring is an AI-driven talent recruitment and enterprise service platform for Cambodia, covering hiring requests, candidate screening, interview coordination, onboarding follow-up, and employer brand exposure.",
     menuTitle: "Please choose a service:",
     menu: {
       candidate: "I’m Looking for a Job",
@@ -120,7 +120,7 @@ const COPY = {
   },
   km: {
     intro:
-      "សូមស្វាគមន៍មកកាន់ច្រកសេវាផ្លូវការរបស់ Boss Hiring។\n\nBoss Hiring គឺជាវេទិកាជ្រើសរើសបុគ្គលិក និងសេវាក្រុមហ៊ុនដែលជំរុញដោយ AI សម្រាប់ទីផ្សារកម្ពុជា។\n\nសូមជ្រើសរើសភាសា៖",
+      "សូមស្វាគមន៍មកកាន់ច្រកសេវាផ្លូវការរបស់ Boss Hiring។\n\nBoss Hiring គឺជាវេទិកាជ្រើសរើសបុគ្គលិក និងសេវាក្រុមហ៊ុនដែលជំរុញដោយ AI សម្រាប់ទីផ្សារកម្ពុជា។",
     menuTitle: "សូមជ្រើសរើសសេវាកម្ម៖",
     menu: {
       candidate: "ខ្ញុំចង់រកការងារ",
@@ -259,7 +259,10 @@ async function handleUpdate(update) {
   if (text === "/start" || text === "/help") {
     formHandler.cancelForm(chatId);
     USER_CONTEXT.delete(chatId);
-    await sendLanguageIntro(chatId);
+    const lang = USER_LANG.get(chatId) || "zh";
+    const t = COPY[lang];
+    await sendMessage(chatId, t.intro, serviceMenuKeyboard(lang, chatId));
+    await sendMainMenu(chatId, lang);
     return;
   }
 
@@ -771,7 +774,6 @@ async function handleCustomerChat(chatId, message) {
   }
 
   // Any other text is treated as an open-ended customer support query answered by RAG
-  await sendMessage(chatId, lang === 'zh' ? "⏳ AI 智能客服正在查询知识库，请稍候..." : lang === 'en' ? "⏳ AI support is searching the knowledge base, please wait..." : "⏳ ភ្នាក់ងារ AI កំពុងស្វែងរកព័ត៌មាន សូមរង់ចាំ...");
   try {
     const ragResult = await answerQuestion(text, lang);
     if (ragResult.isHighRisk) {
